@@ -1,0 +1,33 @@
+INNER_BARREL = {
+    ALFS = {
+        ALF1 = {
+            DNS = aldcs012
+            SERIALS = {
+                SERIAL_0 = [1]
+            }
+        }
+    }
+
+    INSTRUCTIONS = {
+        PATH = ../boards/stave/stave.conf
+        TOPICS = [
+            CHIP/READ,
+            CHIP/READ/SUBSCRIBE,
+            CHIP/WRITE,
+            STAVE/RESET
+        ]
+    }
+
+    MAPPING = {
+        STAVE[x,x,x,x,0] = ALF1/SERIAL_0/LINK_1
+    }
+
+    GROUPS = {
+        STAVES/READ_ALL = STAVE[..]/CHIP/READ
+        {
+            ID = [0,1,2,3,4,5,6,7]
+            ADDR = [0x0019]
+        }
+        STAVES/RESET_ALL = STAVE[..]/STAVE/RESET
+    }
+}

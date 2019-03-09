@@ -1,0 +1,45 @@
+POWER_BOARDS = {
+    ALFS = {
+        ALF1 = {
+                DNS = aldcs012
+                SERIALS = {
+                    SERIAL_0 = [1]
+            }
+        }
+    }
+
+    INSTRUCTIONS = {
+        PATH = ../boards/powerboard/powerboard.conf
+        TOPICS = [
+            INIT,
+            MODULES/STATUS,
+            MODULES/STATUS/SUBSCRIBE,
+            MODULES/ENABLE,
+            VOLTAGE/WRITE,
+            VOLTAGE/READ,
+            VOLTAGE/READ/SUBSCRIBE,
+            CURRENT/READ,
+            CURRENT/READ/SUBSCRIBE,
+            TEMPERATURE/READ,
+            TEMPERATURE/READ/SUBSCRIBE
+        ]
+    }
+
+    MAPPING = {
+        POWERUNIT[0,1] = ALF1/SERIAL_0/LINK_1
+    }
+
+    GROUPS = {
+        INIT_ALL = POWERUNIT[..]/INIT
+        MODULES/STATUS_ALL = POWERUNIT[..]/MODULES/STATUS
+        VOLTAGE/READ_ALL = POWERUNIT[..]/VOLTAGE/READ
+        {
+            CH = [0..15]
+        }
+        CURRENT/READ_ALL = POWERUNIT[..]/CURRENT/READ
+        {
+            CH = [0..15]
+        }
+        TEMPERATURE/READ_ALL = POWERUNIT[..]/TEMPERATURE/READ
+    }
+}
