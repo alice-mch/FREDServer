@@ -28,6 +28,37 @@ Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRE
     generateTopics();
 }
 
+pair<string, string> Fred::readConfigFile()
+{
+    try
+    {
+        vector<string> lines = Parser::readFile("fred.conf", "./config");
+
+        string name, dns;
+        for (size_t i = 0; i < lines.size(); i++)
+        {
+            string left = lines[i].substr(0, lines[i].find("="));
+            string right = lines[i].substr(lines[i].find("=") + 1);
+
+            if (left == "NAME") name = right;
+            else if (left == "DNS") dns = right;
+        }
+
+        if (name != "" && dns != "")
+        {
+            return make_pair(name, dns);
+        }
+    }
+    catch (exception& e)
+    {
+        PrintError("Cannot load FRED config file!");
+        exit(-1);
+    }
+
+    PrintError("Invalid config file!");
+    exit(-1);
+}
+
 void Fred::terminate(int)
 {
     PrintWarning("Closing FRED!");

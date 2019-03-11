@@ -22,6 +22,7 @@ private:
 
 public:
     Fred(string fredName, string fredDns, string mainDirectory);
+    static pair<string, string> readConfigFile();
 
     AlfClients &getAlfClients();
     FredTopics &getFredTopics();

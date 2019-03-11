@@ -5,7 +5,8 @@
 
 int main()
 {
-    Fred fred("FRED1", "aldcs012", "./sections");
+    pair<string, string> config = Fred::readConfigFile();
+    Fred fred(config.first, config.second, "./sections");
 
     MapiExample mapiExample;
     fred.registerMapiObject("FRED1/MAPI_EXAMPLE/LOOP0/TEST", &mapiExample);
