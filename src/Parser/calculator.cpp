@@ -352,6 +352,13 @@ std::map<const std::string&, int> ExpressionParser<T>::setVariable(const std::st
 template<typename T>
 void ExpressionParser<T>::insertVars()
 {
+  std::vector<std::pair<string, int> > vars_(this->vars_.begin(), this->vars_.end());
+  std::sort(vars_.begin(), vars_.end(), [](const std::pair<std::string, int> elem1, const std::pair<std
+::string, int> elem2) -> bool
+  {
+     return elem1.first.length() > elem2.first.length();
+  });
+
   for(auto it=vars_.begin(); it!=vars_.end(); ++it)
   {
      size_t pos;

@@ -177,7 +177,7 @@ vector<uint32_t> Utility::splitAlfResponse(const string& message, Instructions::
         }
         else if (type == Instructions::Type::SWT)
         {
-            result.push_back(stoul(splitted[i].size() > 17 ? splitted[i].substr(splitted[i].size() - 17) : splitted[i], NULL, 16));
+            result.push_back(stoul(splitted[i].size() > 4 ? splitted[i].substr(splitted[i].size() - 4) : splitted[i], NULL, 16));
         }
     }
 
