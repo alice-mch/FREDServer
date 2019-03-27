@@ -28,11 +28,12 @@ void Location::processAlf(string name, vector<string> data)
     size_t idx = 0;
     while (idx < data.size())
     {
-        if (data[idx].find("DNS") != string::npos)
+        /*if (data[idx].find("DNS") != string::npos)
         {
             alfEntry.dns = data[idx].substr(data[idx].find("=") + 1);
         }
-        else if (data[idx].find("SERIALS") != string::npos)
+        else */
+        if (data[idx].find("SERIALS") != string::npos)
         {
             do
             {

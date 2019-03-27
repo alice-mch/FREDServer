@@ -26,7 +26,7 @@ public:
 private:
     map<int32_t, map<int32_t, map<int32_t, Nodes> > > clients;
     map<int32_t, Queue*> queues;
-    map<int32_t, string> dns;
+    //map<int32_t, string> dns;
     Fred* fred;
 
 public:
@@ -34,12 +34,12 @@ public:
     ~AlfClients();
 
     void registerAlf(Location::AlfEntry& entry);
-    Nodes createAlfInfo(string dns, int32_t serial, int32_t link);
+    Nodes createAlfInfo(int32_t id, int32_t serial, int32_t link);
 
     AlfRpcInfo* getAlfNode(int32_t alf, int32_t serial, int32_t link, Instructions::Type type);
     RpcInfoString *getAlfNode(int32_t alf, int32_t serial, int32_t link, Instructions::Type type, bool start);
     Queue* getAlfQueue(int32_t alf);
-    string getAlfDns(int32_t alf);
+    //string getAlfDns(int32_t alf);
     string getAlfSubscribeTopic(int32_t alf, int32_t serial, int32_t link, Instructions::Type type, string name);
 };
 

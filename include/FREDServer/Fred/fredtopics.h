@@ -26,7 +26,7 @@ struct ChainTopic
     AlfRpcInfo* alfLink;
     Queue* alfQueue;
     Mapping::Unit* unit;
-    string alfDns;
+    //string alfDns;
     int32_t placeId;
 
     AlfInfo* alfInfo;

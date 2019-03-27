@@ -28,7 +28,7 @@ void FredTopics::registerUnit(string section, Mapping::Unit& unit, Instructions 
             topics[fullName].alfLink = this->fred->getAlfClients().getAlfNode(unit.alfId, unit.serialId, unit.linkId, topics[fullName].instruction->type);
 
             topics[fullName].alfQueue = this->fred->getAlfClients().getAlfQueue(unit.alfId);
-            topics[fullName].alfDns = this->fred->getAlfClients().getAlfDns(unit.alfId);
+            //topics[fullName].alfDns = this->fred->getAlfClients().getAlfDns(unit.alfId);
 
             topics[fullName].interval = 0.0;
             topics[fullName].mapi = NULL;

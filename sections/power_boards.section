@@ -1,7 +1,6 @@
 POWER_BOARDS = {
     ALFS = {
         ALF1 = {
-                DNS = aldcs012
                 SERIALS = {
                     SERIAL_0 = [1]
             }
