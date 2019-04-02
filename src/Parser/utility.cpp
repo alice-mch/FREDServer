@@ -199,9 +199,14 @@ bool Utility::checkMessageIntegrity(const string& request, const string& respons
     {
         for (size_t i = 0; i < reqVec.size(); i++)
         {
+            transform(reqVec[i].begin(), reqVec[i].end(), reqVec[i].begin(), ::tolower);
+            transform(resVec[i].begin(), resVec[i].end(), resVec[i].begin(), ::tolower);
+
             if (type == Instructions::Type::SCA)
             {
-                if (reqVec[i].substr(0, reqVec[i].find(",")) != resVec[i].substr(0, resVec[i].find(","))) return false;
+                size_t nonZeroPos = reqVec[i].find_first_not_of('0');
+                size_t commaPos = reqVec[i].find(",");
+                if (reqVec[i].substr(nonZeroPos, commaPos-nonZeroPos) != resVec[i].substr(0, resVec[i].find(","))) return false;
             }
             else if (type == Instructions::Type::SWT)
             {
