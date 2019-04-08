@@ -4,6 +4,7 @@
 #include "Alfred/print.h"
 #include "Parser/parser.h"
 #include "Fred/Config/mapping.h"
+#include "Fred/cruregistercommand.h"
 
 Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRED(fredName, dnsName), alfClients(this), fredTopics(this)
 {
@@ -93,6 +94,9 @@ void Fred::generateTopics()
             fredTopics.registerGroup(sections[i].getName(), *group);
         }
     }
+
+    RegisterCommand(new CruRegisterCommand(CruRegisterCommand::WRITE, this));
+    RegisterCommand(new CruRegisterCommand(CruRegisterCommand::READ, this));
 }
 
 AlfClients& Fred::getAlfClients()

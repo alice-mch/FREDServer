@@ -1,5 +1,6 @@
 #include "Fred/alfclients.h"
 #include "Fred/alfrpcinfo.h"
+#include "Fred/crualfrpcinfo.h"
 #include "Fred/fred.h"
 
 AlfClients::AlfClients(Fred *fred)
@@ -29,6 +30,9 @@ void AlfClients::registerAlf(Location::AlfEntry &entry)
         if (clients[entry.id].count(serial->first) == 0)
         {
             clients[entry.id][serial->first] = map<int32_t, Nodes>();
+
+            this->fred->RegisterRpcInfo(new CruAlfRpcInfo("ALF" + to_string(entry.id) + "/SERIAL_" + to_string(serial->first) + "/LINK_0/REGISTER_WRITE", this->fred, CruAlfRpcInfo::WRITE));
+            this->fred->RegisterRpcInfo(new CruAlfRpcInfo("ALF" + to_string(entry.id) + "/SERIAL_" + to_string(serial->first) + "/LINK_0/REGISTER_READ", this->fred, CruAlfRpcInfo::READ));
         }
 
         for (size_t link = 0; link < serial->second.links.size(); link++)
