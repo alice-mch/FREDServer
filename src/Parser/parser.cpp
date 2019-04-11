@@ -42,9 +42,6 @@ vector<string> Parser::findFiles(string directory)
 
 vector<Section> Parser::parseSections()
 {
-    Section emptySection("empty");
-    vector<Section> emptySections;
-
     vector<Section> sections;
 
     vector<string> files = findFiles(this->sectionsPath);
@@ -118,7 +115,6 @@ vector<Section> Parser::parseSections()
                 {
                     PrintError(files[i] + " has invalid name of paragraph: " + name + "!");
                     this->badFiles = true;
-                    //section = emptySection;
                 }
             } // for
             sections.push_back(section);  
