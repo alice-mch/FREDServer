@@ -16,6 +16,11 @@ Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRE
     {
         Parser parser(mainDirectory);
         sections = parser.parseSections();
+
+        if(parser.badFiles)
+        {
+            exit(EXIT_FAILURE);
+        }
     }
     catch (exception& e)
     {
