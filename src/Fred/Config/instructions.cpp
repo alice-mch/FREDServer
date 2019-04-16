@@ -1,6 +1,7 @@
 #include "Fred/Config/instructions.h"
 #include "Parser/parser.h"
 #include "Parser/utility.h"
+#include "Alfred/print.h"
 
 Instructions::Instructions(vector<string> data, string currentPath)
 {
@@ -56,7 +57,19 @@ void Instructions::processConfigFile(string file)
 
                 if (left == "TYPE")
                 {
-                    instruction.type = right == "SWT" ? Type::SWT : Type::SCA;
+                    if (right == "SWT")
+                    {
+                        instruction.type = Type::SWT;
+                    }
+                    else if (right == "SCA")
+                    {
+                        instruction.type = Type::SCA;
+                    }
+                    else
+                    {
+                        PrintError(this->path + " has invalid type name " + right + " in topic " + name);
+                        throw runtime_error("TYPE");
+                    }
                 }
                 else if (left == "SUBSCRIBE")
                 {
@@ -81,12 +94,25 @@ void Instructions::processConfigFile(string file)
                 else if (left == "FILE")
                 {
                     instruction.message = processSequenceFile(this->path.substr(0, this->path.find_last_of("/")) + "/" + right);
+                    if (instruction.message.empty())
+                    {
+                        PrintError("Sequence File in " + name + " topic doesn't exist or is empty");
+                        throw runtime_error("Sequence File doesn't exist or is empty");
+                    }
+                }
+                else
+                {
+                    PrintError(this->path + " has invalid instruction name " + left + " in topic " + name);
+                    throw runtime_error("invalid instruction name");
                 }
             }
 
             instruction.inVar.insert(instruction.inVar.begin(), "_ID_");    //number determined by location of element in the mapping
             instructions[instruction.name] = instruction;
         }
+    }
+    else{
+        throw runtime_error("instructions");
     }
 }
 

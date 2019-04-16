@@ -12,6 +12,7 @@
 Parser::Parser(string sectionsPath)
 {
     this->sectionsPath = sectionsPath;
+    this->badFiles = false;
 }
 
 vector<string> Parser::findFiles(string directory)
@@ -48,45 +49,80 @@ vector<Section> Parser::parseSections()
     {
         vector<string> lines = readFile(files[i], this->sectionsPath);
 
-        string name;
-        vector<string> rest;
-        vector<string> subsection = getSubsection(lines, "{}", name, rest); //without outer wrapper
-
-        Section section(name);
-
-        rest = subsection;
-        for (size_t i = 0; i < 4; i++) //section must have 4 parts
+        if(!lines.empty())
         {
-            vector<string> temp;
-            subsection = getSubsection(rest, "{}", name, temp);
-            rest = temp;
+            string name;
+            vector<string> rest;
+            vector<string> subsection = getSubsection(lines, "{}", name, rest); //without outer wrapper
 
-            if (name == "ALFS")
+            Section section(name);
+
+            rest = subsection;
+            for (size_t j = 0; j < 4; j++) //section must have 4 parts
             {
-                section.location = Location(subsection);
-            }
-            else if (name == "INSTRUCTIONS")
-            {
-                section.instructions = Instructions(subsection, this->sectionsPath);
-            }
-            else if (name == "MAPPING")
-            {
-                section.mapping = Mapping(subsection);
-            }
-            else if (name == "GROUPS")
-            {
-                section.groups = Groups(subsection);
-                section.groups.calculateIds(section.mapping);
-            }
-            else
-            {
-                PrintError("Invalid name of paragraph: " + name + "!");
-            }
+                vector<string> temp;
+                subsection = getSubsection(rest, "{}", name, temp);
+                rest = temp;
+  
+                if (name == "ALFS")
+                {
+                    try
+                    {
+                        section.location = Location(subsection);
+                    }
+                    catch (exception& e)
+                    {
+                        this->badFiles = true;
+                    } 
+                }
+                else if (name == "INSTRUCTIONS")
+                {
+                    try
+                    {
+                        section.instructions = Instructions(subsection, this->sectionsPath);
+                    }
+                    catch (exception& e)
+                    {
+                        this->badFiles = true;
+                    } 
+                }
+                else if (name == "MAPPING")
+                {
+                    try
+                    {
+                        section.mapping = Mapping(subsection);
+                    }
+                    catch (exception& e)
+                    {
+                        this->badFiles = true;
+                    } 
+                }
+                else if (name == "GROUPS")
+                {
+                    try
+                    {
+                        section.groups = Groups(subsection);
+                        // next line will segfault if Mapping section is bad
+                        //  e.g. wasn't processed due to bad section name
+                        section.groups.calculateIds(section.mapping);
+                    }
+                    catch (exception& e)
+                    {
+                        this->badFiles = true;
+                    } 
+                }
+                else
+                {
+                    PrintError(files[i] + " has invalid name of paragraph: " + name + "!");
+                    this->badFiles = true;
+                }
+            } // for
+            sections.push_back(section);  
         }
-
-        sections.push_back(section);
+        else{
+            badFiles = true;
+        }
     }
-
     return sections;
 }
 
@@ -97,7 +133,7 @@ vector<string> Parser::readFile(string fileName, string directory)
     ifstream inFile(directory + "/" + fileName);
     if (!inFile.is_open())
     {
-        PrintError("Cannot open file " + fileName + " in direcotory " + directory + "!");
+        PrintError("Cannot open file " + fileName + " in directory '" + directory + "'!");
     }
 
     vector<string> lines;
@@ -115,49 +151,85 @@ vector<string> Parser::readFile(string fileName, string directory)
 
     inFile.close();
 
-    return lines;
+    if (!balancedBraces(lines, fileName))
+    {
+        vector<string> empty;
+        return empty;
+    }
+    else
+    {
+        return lines;
+    }
 }
 
 vector<string> Parser::getSubsection(vector<string> full, string bracets, string& name, vector<string>& rest)
 {
-    size_t firstLine = -1, lastLine = -1, counter = -1;
-
-    for (size_t i = 0; i < full.size(); i++)
+    try
     {
-        if (firstLine == -1)
+        size_t firstLine = -1, lastLine = -1, counter = -1;
+
+        for (size_t i = 0; i < full.size(); i++)
         {
-            if (full[i].find(bracets[0]) != string::npos)
+            if (firstLine == -1)
             {
-                firstLine = i;
-                counter = 1;
-                name = full[i].substr(0, full[i].find("="));
+                if (full[i].find(bracets[0]) != string::npos)
+                {
+                    firstLine = i;
+                    counter = 1;
+                    name = full[i].substr(0, full[i].find("="));
+                }
+            }
+            else
+            {
+                if (full[i].find(bracets[0]) != string::npos) counter++;
+                else if (full[i].find(bracets[1]) != string::npos) counter--;
+
+                if (counter == 0)
+                {
+                    lastLine = i;
+                    break;
+                }
             }
         }
-        else
-        {
-            if (full[i].find(bracets[0]) != string::npos) counter++;
-            else if (full[i].find(bracets[1]) != string::npos) counter--;
 
-            if (counter == 0)
-            {
-                lastLine = i;
-                break;
-            }
+        vector<string> subsection(full.begin() + firstLine + 1, full.begin() + lastLine);
+
+        if (full.begin() < full.begin() + firstLine)
+        {
+            vector<string> before(full.begin(), full.begin() + firstLine);
+            rest.insert(rest.end(), before.begin(), before.end());
+        }
+        if (full.begin() + lastLine + 1 < full.end())
+        {
+            vector<string> after(full.begin() + lastLine + 1, full.end());
+            rest.insert(rest.end(), after.begin(), after.end());
+        }
+        return subsection;
+    }
+    catch (exception& error) 
+    {
+        PrintError("Exception in getSubsection while parsing " + name);
+    }
+}
+
+bool Parser::balancedBraces(vector<string> lines, string name)
+{
+    int c = 0; 
+  
+    for (int i = 0; i < lines.size(); i++) 
+    {
+        for(int j = 0; j < lines[i].length(); j++)
+        {     
+            if (lines[i][j]=='('||lines[i][j]=='['||lines[i][j]=='{') c++;
+            
+            if (lines[i][j]==')'||lines[i][j]==']'||lines[i][j]=='}') c--;
         }
     }
 
-    vector<string> subsection(full.begin() + firstLine + 1, full.begin() + lastLine);
-
-    if (full.begin() < full.begin() + firstLine)
+    if(c != 0)
     {
-        vector<string> before(full.begin(), full.begin() + firstLine);
-        rest.insert(rest.end(), before.begin(), before.end());
-    }
-    if (full.begin() + lastLine + 1 < full.end())
-    {
-        vector<string> after(full.begin() + lastLine + 1, full.end());
-        rest.insert(rest.end(), after.begin(), after.end());
+        PrintError(name + " has mismatched braces!");
     }
 
-    return subsection;
+    return c == 0 ? 1 : 0;
 }
