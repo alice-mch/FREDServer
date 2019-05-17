@@ -87,6 +87,7 @@ void Utility::removeWhiteSpaces(string& text)
     text.erase(remove(text.begin(), text.end(), ' '), text.end());
     text.erase(remove(text.begin(), text.end(), '\t'), text.end());
     text.erase(remove(text.begin(), text.end(), '\n'), text.end());
+    text.erase(remove(text.begin(), text.end(), '\r'), text.end());
 }
 
 void Utility::removeComment(string& text)

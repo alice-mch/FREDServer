@@ -1,5 +1,8 @@
+#include "Fred/Config/location.h"
 #include "Fred/Config/mapping.h"
+#include "Parser/parser.h"
 #include "Parser/utility.h"
+#include <string>
 
 Mapping::Mapping(vector<string> data)
 {
@@ -13,6 +16,8 @@ Mapping::Mapping(vector<string> data)
         }
     }
 }
+
+
 
 void Mapping::processUnit(string& left, string& right)
 {
@@ -35,11 +40,49 @@ void Mapping::processUnit(string& left, string& right)
         unit.serialId = stoi(path[1].substr(7)); //SERIAL_x
         unit.linkId = stoi(path[2].substr(5)); //LINK_x
 
+        processLocation(unit.alfId, unit.serialId, unit.linkId);
+
         units.push_back(unit);
     }
 }
 
-vector<Mapping::Unit> &Mapping::getUnits()
+void Mapping::processLocation(int32_t alfId, int32_t serialId, int32_t linkId)
+{
+    if (!alfs[alfId].id){ //new ALF
+
+        AlfEntry alfEntry;
+        alfEntry.id = alfId;
+        
+        AlfEntry::SerialEntry serialEntry;
+        serialEntry.id = serialId;
+        serialEntry.links.push_back(linkId);
+
+        alfEntry.serials[serialEntry.id] = serialEntry;
+
+        alfs[alfEntry.id] = alfEntry;
+    }else //already existing ALF
+    {
+        if(!alfs[alfId].serials[serialId].links.size()) //new serial (without links)
+        {
+            AlfEntry::SerialEntry serialEntry;
+            serialEntry.id = serialId;
+            serialEntry.links.push_back(linkId);
+
+            alfs[alfId].serials[serialId] = serialEntry;
+        }else //already existing serial
+        {
+            alfs[alfId].serials[serialId].links.push_back(linkId);
+        }
+    }
+
+}
+
+vector<Mapping::Unit>& Mapping::getUnits()
 {
     return units;
+}
+
+map<int32_t, Location::AlfEntry>& Mapping::alfList()
+{
+    return alfs;
 }

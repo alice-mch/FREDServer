@@ -17,12 +17,13 @@ public:
         string name;
         string unitName, topicName;
         string range;
+        vector<uint32_t> mask;
         vector<int32_t> unitIds;
         map<string, vector<uint32_t> > inVars;
     };
 
     Groups(vector<string> data = vector<string>());
-    void calculateIds(Mapping& mapping);
+    void calculateIds(Mapping& mapping, vector<string> masking);
     vector<Group>& getGroups();
 
 private:
