@@ -7,7 +7,6 @@
 #include "Fred/Config/groups.h"
 #include <dirent.h>
 #include <fstream>
-#include <iostream>
 
 Parser::Parser(string sectionsPath)
 {
@@ -58,68 +57,71 @@ vector<Section> Parser::parseSections()
             Section section(name);
 
             rest = subsection;
-            for (size_t j = 0; j < 4; j++) //section must have 4 parts
+
+            vector<string> instructionsLines, mappingLines, groupsLines, maskingLines;
+
+            while (rest.size()) //rest is shrinking each loop
             {
                 vector<string> temp;
                 subsection = getSubsection(rest, "{}", name, temp);
                 rest = temp;
-  
-                if (name == "ALFS")
+
+                if (name == "INSTRUCTIONS")
                 {
-                    try
-                    {
-                        section.location = Location(subsection);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
-                }
-                else if (name == "INSTRUCTIONS")
-                {
-                    try
-                    {
-                        section.instructions = Instructions(subsection, this->sectionsPath);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
+                    instructionsLines = subsection;
                 }
                 else if (name == "MAPPING")
                 {
-                    try
-                    {
-                        section.mapping = Mapping(subsection);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
+                    mappingLines = subsection;
                 }
                 else if (name == "GROUPS")
                 {
-                    try
-                    {
-                        section.groups = Groups(subsection);
-                        // next line will segfault if Mapping section is bad
-                        //  e.g. wasn't processed due to bad section name
-                        section.groups.calculateIds(section.mapping);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
+                    groupsLines = subsection;
+                }
+                else if (name == "MASK")
+                {
+                    maskingLines = subsection;
                 }
                 else
                 {
                     PrintError(files[i] + " has invalid name of paragraph: " + name + "!");
                     this->badFiles = true;
                 }
-            } // for
+            }
+
+            if(!instructionsLines.size()) //section INSTRUCTIONS is mandatory
+            {
+                PrintError("INSTRUCTIONS section in " + files[i] + " is missing!");
+                this->badFiles = true;
+
+            }
+            if (!mappingLines.size()) //section MAPPING is mandatory
+            {
+                PrintError("MAPPING section in " + files[i] + " is missing!");
+                this->badFiles = true;
+            }
+
+            if(!this->badFiles)
+            {
+                try
+                {
+                    section.instructions = Instructions(instructionsLines, this->sectionsPath);
+                    section.mapping = Mapping(mappingLines);
+                    section.groups = Groups(groupsLines);
+
+                    // next line will segfault if Mapping section is bad
+                    //  e.g. wasn't processed due to bad section name
+                    section.groups.calculateIds(section.mapping, maskingLines);
+                }
+                catch (exception& e)
+                {
+                    this->badFiles = true;
+                } 
+            }
             sections.push_back(section);  
         }
-        else{
+        else
+        {
             badFiles = true;
         }
     }

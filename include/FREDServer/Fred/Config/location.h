@@ -10,8 +10,6 @@ using namespace std;
 class Location
 {
 public:
-    Location(vector<string> data = vector<string>());
-
     struct AlfEntry
     {
         struct SerialEntry
@@ -25,13 +23,8 @@ public:
         map<int32_t, SerialEntry> serials;
     };
 
-    map<int32_t, AlfEntry>& getAlfs();
-
-private:
     map<int32_t, AlfEntry> alfs;
 
-    void processAlf(string name, vector<string> data);
-    AlfEntry::SerialEntry processSerial(string serial);
 };
 
 #endif // LOCATION_H

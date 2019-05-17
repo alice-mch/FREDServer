@@ -1,0 +1,18 @@
+VLDB_EXAMPLE = {
+    INSTRUCTIONS = {
+        PATH = ../boards/vldb/vldb.conf
+    }
+
+    MAPPING = {
+       VLDB[0] = ALF1/SERIAL_0/LINK_1
+       VLDB[42,333,1000] = ALF1/SERIAL_1/LINK_2
+    }
+
+    GROUPS = {
+    	SCAID/ALL = VLDB[..]/SCAID/READ
+    }
+
+    MASK = {
+    	VLDB[333,1000]
+    }
+}

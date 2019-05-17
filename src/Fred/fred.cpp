@@ -75,8 +75,9 @@ void Fred::generateAlfs()
 {
     for (size_t i = 0; i < sections.size(); i++)
     {
-        map<int32_t, Location::AlfEntry>& alfs = sections[i].location.getAlfs();
-        for (auto alf = alfs.begin(); alf != alfs.end(); alf++)
+        map<int32_t, Location::AlfEntry>& ALFS = sections[i].mapping.alfList();
+
+        for (auto alf = ALFS.begin(); alf != ALFS.end(); alf++)
         {
             alfClients.registerAlf(alf->second);
         }
