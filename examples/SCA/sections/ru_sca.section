@@ -1,0 +1,10 @@
+RU_SCA = {
+    INSTRUCTIONS = {
+        PATH = ../boards/ru_sca/ru_sca.conf
+    }
+
+    MAPPING = {
+       ITSRU[0] = ALF75/SERIAL_0/LINK_2
+    }
+}
+
