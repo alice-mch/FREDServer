@@ -1,0 +1,9 @@
+VLDB = {
+    INSTRUCTIONS = {
+        PATH = ../boards/vldb/vldb.conf
+    }
+
+    MAPPING = {
+       VLDB[0] = ALF74/SERIAL_0/LINK_1
+    }
+}
