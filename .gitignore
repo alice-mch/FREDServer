@@ -4,4 +4,7 @@ Makefile
 bin/*
 cmake_install.cmake
 lib/libAlfred.so
+boards/*
+sections/*
+config/*
 
