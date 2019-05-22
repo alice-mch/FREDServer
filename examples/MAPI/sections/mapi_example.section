@@ -1,9 +1,0 @@
-MAPI_EXAMPLE = {
-    INSTRUCTIONS = {
-        PATH = ../boards/mapi/mapi.conf
-    }
-
-    MAPPING = {
-        LOOP[0] = ALF1/SERIAL_0/LINK_2
-    }
-}

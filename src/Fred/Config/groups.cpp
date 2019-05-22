@@ -53,10 +53,8 @@ void Groups::processGroup(string& left, string& right, vector<string> &inVars)
     groups.push_back(group);
 }
 
-void Groups::calculateIds(Mapping& mapping, vector<string> masking)
+void Groups::calculateIds(Mapping& mapping)
 {
-     
-
     for (size_t g = 0; g < groups.size(); g++)
     {
         vector<int32_t> all;
@@ -72,7 +70,6 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
         sort(all.begin(), all.end());
 
         string range = groups[g].range;
-        
         size_t pos;
         while ((pos = range.find("..")) != string::npos)
         {
@@ -106,28 +103,7 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
         }
 
         vector<string> textIds = Utility::splitString(range, ",");
-
-        
-        vector<int32_t> ids;
-
-        for (size_t i = 0; i < textIds.size(); i++)
-        {
-            ids.push_back(stoi(textIds[i]));
-        }
-
-        if (masking.size()) //if masking section is present
-        {
-            vector<uint32_t> mask = processChannels(masking[0]);
-    
-            vector<int32_t> diff; //ids vector - mask vector
-            set_difference(ids.begin(), ids.end(), mask.begin(), mask.end(), std::inserter(diff, diff.begin()));
-
-            groups[g].unitIds = diff; 
-        }
-        else
-        {
-            groups[g].unitIds = ids;
-        }
+        for (size_t i = 0; i < textIds.size(); i++) groups[g].unitIds.push_back(stoi(textIds[i]));
     }
 }
 
