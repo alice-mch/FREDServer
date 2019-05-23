@@ -7,7 +7,6 @@
 #include "Fred/Config/groups.h"
 #include <dirent.h>
 #include <fstream>
-#include <iostream>
 
 Parser::Parser(string sectionsPath)
 {
@@ -58,24 +57,13 @@ vector<Section> Parser::parseSections()
             Section section(name);
 
             rest = subsection;
-            for (size_t j = 0; j < 4; j++) //section must have 4 parts
+            for (size_t j = 0; j < 3; j++) //no ALFS section
             {
                 vector<string> temp;
                 subsection = getSubsection(rest, "{}", name, temp);
                 rest = temp;
   
-                if (name == "ALFS")
-                {
-                    try
-                    {
-                        section.location = Location(subsection);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
-                }
-                else if (name == "INSTRUCTIONS")
+                if (name == "INSTRUCTIONS")
                 {
                     try
                     {
