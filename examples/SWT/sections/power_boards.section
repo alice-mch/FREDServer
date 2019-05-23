@@ -1,12 +1,4 @@
 POWER_BOARDS = {
-    ALFS = {
-        ALF1 = {
-                SERIALS = {
-                    SERIAL_0 = [1]
-            }
-        }
-    }
-
     INSTRUCTIONS = {
         PATH = ../boards/powerboard/powerboard.conf
         TOPICS = [
