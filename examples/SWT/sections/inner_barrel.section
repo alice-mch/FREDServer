@@ -1,12 +1,6 @@
 INNER_BARREL = {
     INSTRUCTIONS = {
         PATH = ../boards/stave/stave.conf
-        TOPICS = [
-            CHIP/READ,
-            CHIP/READ/SUBSCRIBE,
-            CHIP/WRITE,
-            STAVE/RESET
-        ]
     }
 
     MAPPING = {

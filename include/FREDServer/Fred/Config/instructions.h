@@ -35,7 +35,7 @@ private:
     vector<string> topics;
     map<string, Instruction> instructions;
 
-    void processConfigFile(string file);
+    vector<string> processConfigFile(string file);
     vector<string> processSequenceFile(string file);
 };
 
