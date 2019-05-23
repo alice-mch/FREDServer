@@ -113,6 +113,8 @@ vector<Section> Parser::parseSections()
                     // next line will segfault if Mapping section is bad
                     //  e.g. wasn't processed due to bad section name
                     section.groups.calculateIds(section.mapping);
+
+                    checkGroup(section);  //check if group topics are existing
                 }
                 catch (exception& e)
                 {
@@ -127,6 +129,22 @@ vector<Section> Parser::parseSections()
         }
     }
     return sections;
+}
+
+void Parser::checkGroup(Section section)
+{
+    vector<string> topics = section.instructions.getTopics();
+    vector<Groups::Group> groups = section.groups.getGroups();
+
+    for (auto i = groups.begin(); i != groups.end(); i++)
+    {   
+        if (!(std::find(topics.begin(), topics.end(), i->topicName) != topics.end()))
+        {
+            PrintError("Topic " + i->topicName + " from group " + i->name + " in section " 
+                + section.getName() +  " is not an existing topic!");
+            throw runtime_error("Non existing group topic");
+        }
+    }
 }
 
 vector<string> Parser::readFile(string fileName, string directory)
