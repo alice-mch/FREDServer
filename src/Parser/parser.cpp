@@ -135,14 +135,35 @@ void Parser::checkGroup(Section section)
 {
     vector<string> topics = section.instructions.getTopics();
     vector<Groups::Group> groups = section.groups.getGroups();
+    vector<Mapping::Unit> units = section.mapping.getUnits();
 
     for (auto i = groups.begin(); i != groups.end(); i++)
     {   
-        if (!(std::find(topics.begin(), topics.end(), i->topicName) != topics.end()))
+        if (!(find(topics.begin(), topics.end(), i->topicName) != topics.end()))
         {
             PrintError("Topic " + i->topicName + " from group " + i->name + " in section " 
-                + section.getName() +  " is not an existing topic!");
+                + section.getName() + " is not an existing topic!");
             throw runtime_error("Non existing group topic");
+        }
+
+        for (size_t j = 0; j < i->unitIds.size(); j++)
+        {
+            bool found = false;
+            for (size_t k = 0; k < units.size(); k++)
+            {    
+                vector<int>::iterator it = find(units[k].unitIds.begin(), units[k].unitIds.end(), i->unitIds[j]); 
+                if (it != units[k].unitIds.end()) 
+                { 
+                    found = true;
+                }
+            }
+
+            if (!found)
+            {
+                PrintError("Unit " + to_string(i->unitIds[j]) + " from group " + i->name + " in section " 
+                    + section.getName() + " is not an existing unit!");
+                throw runtime_error("Non existing unit");
+            }
         }
     }
 }
