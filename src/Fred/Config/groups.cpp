@@ -21,7 +21,6 @@ Groups::Groups(vector<string> data)
                     i++;
                 }
             }
-
             processGroup(left, right, inVars);
         }
     }
@@ -53,10 +52,23 @@ void Groups::processGroup(string& left, string& right, vector<string> &inVars)
     groups.push_back(group);
 }
 
-void Groups::calculateIds(Mapping& mapping)
+void Groups::calculateIds(Mapping& mapping, vector<string> masking)
 {
     for (size_t g = 0; g < groups.size(); g++)
     {
+        if (masking.size())
+        {
+            string maskString = masking[0];
+            maskString = maskString.substr(maskString.find("[") + 1, maskString.find("]") - maskString.find("[") - 1);
+            Utility::removeWhiteSpaces(maskString);
+            vector<string> textMask = Utility::splitString(maskString, ",");
+
+            for (size_t i = 0; i < textMask.size(); i++)
+            {
+                groups[g].mask.push_back(stoi(textMask[i]));
+            }
+        }
+
         vector<int32_t> all;
         for (size_t i = 0; i < mapping.getUnits().size(); i++)
         {
@@ -70,6 +82,7 @@ void Groups::calculateIds(Mapping& mapping)
         sort(all.begin(), all.end());
 
         string range = groups[g].range;
+        
         size_t pos;
         while ((pos = range.find("..")) != string::npos)
         {
@@ -103,7 +116,17 @@ void Groups::calculateIds(Mapping& mapping)
         }
 
         vector<string> textIds = Utility::splitString(range, ",");
-        for (size_t i = 0; i < textIds.size(); i++) groups[g].unitIds.push_back(stoi(textIds[i]));
+        vector<int32_t> ids;
+
+        for (size_t i = 0; i < textIds.size(); i++)
+        {
+            ids.push_back(stoi(textIds[i]));
+        }
+
+        vector<int32_t> masked; //ids vector - mask vector
+        set_difference(ids.begin(), ids.end(), groups[g].mask.begin(), groups[g].mask.end(), inserter(masked, masked.begin()));
+
+        groups[g].unitIds = masked;         
     }
 }
 

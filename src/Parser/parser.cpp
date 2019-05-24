@@ -112,9 +112,9 @@ vector<Section> Parser::parseSections()
 
                     // next line will segfault if Mapping section is bad
                     //  e.g. wasn't processed due to bad section name
-                    section.groups.calculateIds(section.mapping);
+                    section.groups.calculateIds(section.mapping, maskingLines);
 
-                    checkGroup(section);  //check if group topics are existing
+                    checkGroup(section); //check if group topics are existing
                 }
                 catch (exception& e)
                 {
