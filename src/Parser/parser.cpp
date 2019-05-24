@@ -146,6 +146,12 @@ void Parser::checkGroup(Section section)
             throw runtime_error("Non existing group topic");
         }
 
+        if(i->unitIds.size() == 0)
+        {
+            PrintError("Group " + i->name + " in section " + section.getName() + " has no units!");
+            throw runtime_error("Group with no units");
+        }
+
         for (size_t j = 0; j < i->unitIds.size(); j++)
         {
             bool found = false;
