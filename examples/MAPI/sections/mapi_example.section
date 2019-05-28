@@ -1,17 +1,6 @@
 MAPI_EXAMPLE = {
-    ALFS = {
-        ALF1 = {
-            SERIALS = {
-                SERIAL_0 = [2]
-            }
-        }
-    }
-
     INSTRUCTIONS = {
         PATH = ../boards/mapi/mapi.conf
-        TOPICS = [
-            TEST
-        ]
     }
 
     MAPPING = {

@@ -7,7 +7,7 @@
 #include "Fred/Config/groups.h"
 #include <dirent.h>
 #include <fstream>
-#include <iostream>
+#include <algorithm>
 
 Parser::Parser(string sectionsPath)
 {
@@ -58,72 +58,120 @@ vector<Section> Parser::parseSections()
             Section section(name);
 
             rest = subsection;
-            for (size_t j = 0; j < 4; j++) //section must have 4 parts
+
+            vector<string> instructionsLines, mappingLines, groupsLines, maskingLines;
+
+            while (rest.size()) //rest is shrinking each loop
             {
                 vector<string> temp;
                 subsection = getSubsection(rest, "{}", name, temp);
                 rest = temp;
-  
-                if (name == "ALFS")
+
+                if (name == "INSTRUCTIONS")
                 {
-                    try
-                    {
-                        section.location = Location(subsection);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
-                }
-                else if (name == "INSTRUCTIONS")
-                {
-                    try
-                    {
-                        section.instructions = Instructions(subsection, this->sectionsPath);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
+                    instructionsLines = subsection;
                 }
                 else if (name == "MAPPING")
                 {
-                    try
-                    {
-                        section.mapping = Mapping(subsection);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
+                    mappingLines = subsection;
                 }
                 else if (name == "GROUPS")
                 {
-                    try
-                    {
-                        section.groups = Groups(subsection);
-                        // next line will segfault if Mapping section is bad
-                        //  e.g. wasn't processed due to bad section name
-                        section.groups.calculateIds(section.mapping);
-                    }
-                    catch (exception& e)
-                    {
-                        this->badFiles = true;
-                    } 
+                    groupsLines = subsection;
+                }
+                else if (name == "MASK")
+                {
+                    maskingLines = subsection;
                 }
                 else
                 {
                     PrintError(files[i] + " has invalid name of paragraph: " + name + "!");
                     this->badFiles = true;
                 }
-            } // for
+            }
+
+            if(!instructionsLines.size()) //section INSTRUCTIONS is mandatory
+            {
+                PrintError("INSTRUCTIONS section in " + files[i] + " is missing!");
+                this->badFiles = true;
+
+            }
+            if (!mappingLines.size()) //section MAPPING is mandatory
+            {
+                PrintError("MAPPING section in " + files[i] + " is missing!");
+                this->badFiles = true;
+            }
+
+            if(!this->badFiles)
+            {
+                try
+                {
+                    section.instructions = Instructions(instructionsLines, this->sectionsPath);
+                    section.mapping = Mapping(mappingLines);
+                    section.groups = Groups(groupsLines);
+
+                    // next line will segfault if Mapping section is bad
+                    //  e.g. wasn't processed due to bad section name
+                    section.groups.calculateIds(section.mapping, maskingLines);
+
+                    checkGroup(section); //check if group topics are existing
+                }
+                catch (exception& e)
+                {
+                    this->badFiles = true;
+                } 
+            }
             sections.push_back(section);  
         }
-        else{
+        else
+        {
             badFiles = true;
         }
     }
     return sections;
+}
+
+void Parser::checkGroup(Section section)
+{
+    vector<string> topics = section.instructions.getTopics();
+    vector<Groups::Group> groups = section.groups.getGroups();
+    vector<Mapping::Unit> units = section.mapping.getUnits();
+
+    for (auto i = groups.begin(); i != groups.end(); i++)
+    {   
+        if (!(find(topics.begin(), topics.end(), i->topicName) != topics.end()))
+        {
+            PrintError("Topic " + i->topicName + " from group " + i->name + " in section " 
+                + section.getName() + " is not an existing topic!");
+            throw runtime_error("Non existing group topic");
+        }
+
+        if(i->unitIds.size() == 0)
+        {
+            PrintError("Group " + i->name + " in section " + section.getName() + " has no units!");
+            throw runtime_error("Group with no units");
+        }
+
+        for (size_t j = 0; j < i->unitIds.size(); j++)
+        {
+            bool found = false;
+            for (size_t k = 0; k < units.size(); k++)
+            {    
+                vector<int>::iterator it = find(units[k].unitIds.begin(), units[k].unitIds.end(), i->unitIds[j]); 
+                if (it != units[k].unitIds.end()) 
+                { 
+                    found = true;
+                }
+            }
+
+            if (!found)
+            {
+                PrintError("Unit " + to_string(i->unitIds[j]) + " from group " + i->name + " in section " 
+                    + section.getName() + " is not an existing unit!");
+                throw runtime_error("Non existing unit");
+            }
+        }
+    }
 }
 
 vector<string> Parser::readFile(string fileName, string directory)
