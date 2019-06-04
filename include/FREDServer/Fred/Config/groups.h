@@ -17,7 +17,6 @@ public:
         string name;
         string unitName, topicName;
         string range;
-        vector<int32_t> mask;
         vector<int32_t> unitIds;
         map<string, vector<uint32_t> > inVars;
     };
