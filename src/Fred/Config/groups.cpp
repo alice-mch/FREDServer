@@ -1,6 +1,7 @@
 #include <algorithm>
 #include "Fred/Config/groups.h"
 #include "Parser/utility.h"
+#include "Alfred/print.h"
 
 Groups::Groups(vector<string> data)
 {
@@ -63,6 +64,11 @@ void Groups::calculateIds(Mapping& mapping)
             if (mapping.getUnits()[i].unitName == groups[g].unitName)
             {
                 all.insert(all.end(), mapping.getUnits()[i].unitIds.begin(), mapping.getUnits()[i].unitIds.end());
+            }
+            else
+            {
+                PrintError(groups[g].unitName + " is not an existing FED!");
+                throw runtime_error("Unexisting FED");
             }
         }
 
