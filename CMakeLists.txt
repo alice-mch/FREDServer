@@ -43,6 +43,7 @@ file(GLOB SOURCES "src/main.cpp"
                 "src/Fred/cruregistercommand.cpp"
                 "src/Fred/Config/groups.cpp"
                 "src/Fred/Config/instructions.cpp"
+                "src/Fred/Config/location.cpp"
                 "src/Fred/Config/mapping.cpp"
                 "src/Mapi/*.cpp"
 	)

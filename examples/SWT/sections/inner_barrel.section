@@ -1,6 +1,20 @@
 INNER_BARREL = {
+    ALFS = {
+        ALF1 = {
+            SERIALS = {
+                SERIAL_0 = [1]
+            }
+        }
+    }
+
     INSTRUCTIONS = {
         PATH = ../boards/stave/stave.conf
+        TOPICS = [
+            CHIP/READ,
+            CHIP/READ/SUBSCRIBE,
+            CHIP/WRITE,
+            STAVE/RESET
+        ]
     }
 
     MAPPING = {

@@ -2,7 +2,6 @@
 #include "Parser/parser.h"
 #include "Parser/utility.h"
 #include "Alfred/print.h"
-#include <regex>
 
 Instructions::Instructions(vector<string> data, string currentPath)
 {
@@ -13,17 +12,28 @@ Instructions::Instructions(vector<string> data, string currentPath)
     {
         if (data[idx].find("PATH") != string::npos)
         {
-            topics = processConfigFile(currentPath + "/" + data[idx].substr(data[idx].find("=") + 1));
+            processConfigFile(currentPath + "/" + data[idx].substr(data[idx].find("=") + 1));
         }
+        else if (data[idx].find("TOPICS") != string::npos)
+        {
+            do
+            {
+                idx++;
+
+                string topic = data[idx];
+                if (topic[topic.size() - 1] == ',') topic.erase(topic.size() - 1);
+                topics.push_back(topic);
+            }
+            while (data[idx + 1].find("]") == string::npos);
+        }
+
         idx++;
     }
 }
 
-vector<string> Instructions::processConfigFile(string file)
+void Instructions::processConfigFile(string file)
 {
     this->path = file;
-
-    vector<string> topics;
 
     vector<string> lines = Parser::readFile(this->path, ".");
     if (!lines.empty())
@@ -36,19 +46,9 @@ vector<string> Instructions::processConfigFile(string file)
             vector<string> subsection = Parser::getSubsection(rest, "{}", name, temp);
             rest = temp;
 
-            regex rgx ("^(\\w|-|/|:)+$");
-
-            if(!std::regex_match(name, rgx))
-            {
-                PrintError("Topic " + name + " in file " + file + " contains bad character(s)");
-                throw runtime_error("Bad character");
-            }
-
             Instruction instruction;
             instruction.subscribe = false;
             instruction.name = name;
-
-            topics.push_back(name);
 
             for (size_t i = 0; i < subsection.size(); i++)
             {
@@ -107,15 +107,11 @@ vector<string> Instructions::processConfigFile(string file)
                 }
             }
 
-            instruction.inVar.insert(instruction.inVar.begin(), "_ID_"); //number determined by location of element in the mapping
+            instruction.inVar.insert(instruction.inVar.begin(), "_ID_");    //number determined by location of element in the mapping
             instructions[instruction.name] = instruction;
         }
-
-        return topics;
-
-    } //if not empty
-    else
-    {
+    }
+    else{
         throw runtime_error("instructions");
     }
 }

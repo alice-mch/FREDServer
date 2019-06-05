@@ -1,4 +1,3 @@
-#include "Fred/Config/location.h"
 #include "Fred/Config/mapping.h"
 #include "Parser/utility.h"
 
@@ -36,49 +35,11 @@ void Mapping::processUnit(string& left, string& right)
         unit.serialId = stoi(path[1].substr(7)); //SERIAL_x
         unit.linkId = stoi(path[2].substr(5)); //LINK_x
 
-        processLocation(unit.alfId, unit.serialId, unit.linkId);
-
         units.push_back(unit);
     }
 }
 
-void Mapping::processLocation(int32_t alfId, int32_t serialId, int32_t linkId)
-{
-    if (!alfs.count(alfId)) //new ALF
-    {
-        AlfEntry::SerialEntry serialEntry;
-        serialEntry.id = serialId;
-        serialEntry.links.push_back(linkId);
-
-        AlfEntry NewAlfEntry;
-        NewAlfEntry.id = alfId;
-        NewAlfEntry.serials[serialId] = serialEntry;
-
-        alfs[alfId] = NewAlfEntry;
-    }
-    else //already existing ALF
-    {
-        if (!alfs[alfId].serials.count(serialId)) //new serial
-        {
-            AlfEntry::SerialEntry NewSerialEntry;
-            NewSerialEntry.id = serialId;
-            NewSerialEntry.links.push_back(linkId);
-
-            alfs[alfId].serials[serialId] = NewSerialEntry;
-        }
-        else //already existing serial
-        {
-            alfs[alfId].serials[serialId].links.push_back(linkId);
-        }
-    }
-}
-
-vector<Mapping::Unit>& Mapping::getUnits()
+vector<Mapping::Unit> &Mapping::getUnits()
 {
     return units;
-}
-
-map<int32_t, Location::AlfEntry>& Mapping::alfList()
-{
-    return alfs;
 }
