@@ -2,6 +2,7 @@
 #include "Fred/Config/groups.h"
 #include "Alfred/print.h"
 #include "Parser/utility.h"
+#include "Alfred/print.h"
 
 Groups::Groups(vector<string> data)
 {
@@ -81,6 +82,11 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
             {
                 all.insert(all.end(), mapping.getUnits()[i].unitIds.begin(), mapping.getUnits()[i].unitIds.end());
             }
+            else
+            {
+                PrintError(groups[g].unitName + " is not an existing FED!");
+                throw runtime_error("Unexisting FED");
+            }
         }
 
         all.erase(remove(all.begin(), all.end(), -1), all.end());
@@ -142,6 +148,8 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
 
     for (auto it = mask.begin(); it != mask.end(); it++)
     {
+        PrintWarning(fed + "[" + to_string(*it) + "] is masked!");
+
         if (find(allIds.begin(), allIds.end(), *it) != allIds.end())
         {
             mask.erase(it--);
