@@ -148,6 +148,8 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
 
     for (auto it = mask.begin(); it != mask.end(); it++)
     {
+        PrintWarning(fed + "[" + to_string(*it) + "] is masked!");
+
         if (find(allIds.begin(), allIds.end(), *it) != allIds.end())
         {
             mask.erase(it--);
