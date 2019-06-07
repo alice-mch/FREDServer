@@ -1,5 +1,12 @@
 # FREDServer
 
+## Version History
+* v1.5 - Adds 'Mask' block for masking devices from Group commands
+* v1.4 - Changes the way section files are structured to be much cleaner
+  - Removes 'ALFS' and 'INSTRUCTIONS': info now processed from 'MAPPING' and board config, respectively
+* v1.3.1 - Bugfix for carriage-return characters in configs
+* v1.3 - Adds direct access to CRU registers (r/w), adds helpful parsing errors
+
 ## Prerequisites
 
 cmake3 devtoolset-7
