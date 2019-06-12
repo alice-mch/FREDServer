@@ -143,7 +143,7 @@ CommandInt::CommandInt(string name, ALFRED* alfred): Command::Command(name, alfr
 {
 	type = DIM_TYPE::INT;
 
-	PrintInfo(string("Command ") + name + " registered!");
+	PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandInt::~CommandInt()
@@ -184,7 +184,7 @@ CommandFloat::CommandFloat(string name, ALFRED* alfred): Command::Command(name, 
 {
 	type = DIM_TYPE::FLOAT;
 
-	PrintInfo(string("Command ") + name + " registered!");
+	PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandFloat::~CommandFloat()
@@ -225,7 +225,7 @@ CommandString::CommandString(string name, ALFRED* alfred): Command::Command(name
 {
     type = DIM_TYPE::STRING;
 
-    PrintInfo(string("Command ") + name + " registered!");
+    PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandString::~CommandString()
@@ -266,7 +266,7 @@ CommandData::CommandData(string name, string format, ALFRED* alfred): Command::C
 {
 	type = DIM_TYPE::DATA;
 
-	PrintInfo(string("Command ") + name + " registered!");
+	PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandData::~CommandData()

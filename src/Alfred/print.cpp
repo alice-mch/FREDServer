@@ -1,4 +1,5 @@
 #include "Alfred/print.h"
+#include "Fred/fredMode.h"
 #include <sys/time.h>
 #include <time.h>
 #include <math.h>
@@ -48,4 +49,13 @@ void PrintWarning(string message)
 void PrintInfo(string message)
 {
 	Print(string(ANSI_COLOR_GREEN) + "INFO" + ANSI_COLOR_RESET, message);
+}
+
+void PrintVerbose(string message)
+{
+	extern int fredMode;
+	if (fredMode == VERBOSE)
+	{
+		Print(string(ANSI_COLOR_BLUE) + "VERBOSE" + ANSI_COLOR_RESET, message);
+	}
 }

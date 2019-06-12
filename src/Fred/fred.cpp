@@ -5,20 +5,24 @@
 #include "Parser/parser.h"
 #include "Fred/Config/mapping.h"
 #include "Fred/cruregistercommand.h"
+#include "Fred/fredMode.h"
 
 Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRED(fredName, dnsName), alfClients(this), fredTopics(this)
 {
+    extern int fredMode;
     signal(SIGINT, &terminate);
 
     this->fredDns = dnsName;
 
-    try
+    PrintInfo("Parsing started.");
+    try //parsing
     {
         Parser parser(mainDirectory);
         sections = parser.parseSections();
 
         if(parser.badFiles)
         {
+            PrintError("Parser discovered errors! (See output above)");
             exit(EXIT_FAILURE);
         }
     }
@@ -28,10 +32,16 @@ Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRE
         exit(EXIT_FAILURE);
     }
 
-    PrintInfo("Starting FRED!");
+    if (fredMode == PARSER)
+    {
+        PrintInfo("Parsing completed! No problems discovered.");
+        exit(EXIT_SUCCESS);
+    }
 
+    PrintInfo("Parsing Completed. Starting FRED.");
     generateAlfs();
-    generateTopics();
+    generateTopics();         
+    PrintInfo("FRED running.");
 }
 
 pair<string, string> Fred::readConfigFile()

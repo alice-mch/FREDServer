@@ -24,7 +24,7 @@ const void* MappedCommand::Execution(void *value)
 
     string request(static_cast<char*>(value));
 
-    PrintInfo("Received command:\n" + request);
+    PrintVerbose("Received command:\n" + request);
 
     if (topic->mapi == NULL)
     {

@@ -33,7 +33,7 @@ const void* CruRegisterCommand::Execution(void *value)
 
     string request(static_cast<char*>(value));
 
-    PrintInfo("Received command:\n" + request);
+    PrintVerbose("Received command:\n" + request);
 
     vector<uint32_t> splitted = Utility::splitString2Num(request, ",");
 

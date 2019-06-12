@@ -158,7 +158,7 @@ RpcInfoInt::RpcInfoInt(string name, string dns, ALFRED* alfred): RpcInfo::RpcInf
     type = DIM_TYPE::INT;
     rpcInfo = new DimRpcInfo(name.c_str(), -1);
 
-    PrintInfo(string("RpcInfo ") + name + " registered!");
+    PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoInt::~RpcInfoInt()
@@ -205,7 +205,7 @@ RpcInfoFloat::RpcInfoFloat(string name, string dns, ALFRED* alfred): RpcInfo::Rp
     type = DIM_TYPE::FLOAT;
     rpcInfo = new DimRpcInfo(name.c_str(), -1.0);
 
-    PrintInfo(string("RpcInfo ") + name + " registered!");
+    PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoFloat::~RpcInfoFloat()
@@ -253,7 +253,7 @@ RpcInfoString::RpcInfoString(string name, string dns, ALFRED* alfred): RpcInfo::
     noLink[0] = '\0';
     rpcInfo = new DimRpcInfo(name.c_str(), noLink);
 
-    PrintInfo(string("RpcInfo ") + name + " registered!");
+    PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoString::~RpcInfoString()
@@ -301,7 +301,7 @@ RpcInfoData::RpcInfoData(string name, string dns, ALFRED* alfred, size_t size): 
     this->size = size;
     rpcInfo = new DimRpcInfo(name.c_str(), (void*)NULL, (int)0);
 
-    PrintInfo(string("RpcInfo ") + name + " registered!");
+    PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoData::~RpcInfoData()
