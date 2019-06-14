@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include <cctype>
 #include <algorithm>
 #include "Parser/utility.h"
 #include "Parser/calculator.h"
@@ -84,10 +85,8 @@ vector<vector<uint32_t> > Utility::splitMessage2Num(const string &text)
 
 void Utility::removeWhiteSpaces(string& text)
 {
-    text.erase(remove(text.begin(), text.end(), ' '), text.end());
-    text.erase(remove(text.begin(), text.end(), '\t'), text.end());
-    text.erase(remove(text.begin(), text.end(), '\n'), text.end());
-    text.erase(remove(text.begin(), text.end(), '\r'), text.end());
+    text.erase(remove_if(text.begin(), text.end(), [](unsigned char c){return isspace(c);}), text.end());
+    text.erase(remove_if(text.begin(), text.end(), [](unsigned char c){return iscntrl(c);}), text.end());
 }
 
 void Utility::removeComment(string& text)
