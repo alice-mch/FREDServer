@@ -21,7 +21,7 @@ ALFRED::ALFRED(string server, string dns, string network)
 
 	if (ServerRegistered(server))
 	{
-		PrintError(string("Server ") + server + " is already running!");
+		PrintError(string("Server ") + server + " is already registered on DIM DNS!");
 		exit(EXIT_FAILURE);
 	}
 }
