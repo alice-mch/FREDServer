@@ -27,7 +27,7 @@ const void* GroupCommand::Execution(void *value)
         PrintError("Invalid request, no value received!");
     }
 
-    PrintInfo("Received group command:\n");
+    PrintVerbose("Received group command:\n");
 
     for (size_t i = 0; i < topic->chainTopics.size(); i++)
     {

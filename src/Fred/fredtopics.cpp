@@ -84,7 +84,7 @@ void FredTopics::registerMapiObject(string topic, MapiInterface* mapi)
     try
     {
         topics[topic].mapi = mapi;
-        PrintInfo("Mapi object registered to topic " + topic);
+        PrintVerbose("Mapi object registered to topic " + topic);
     }
     catch (const exception& e)
     {

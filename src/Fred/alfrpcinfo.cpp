@@ -16,7 +16,7 @@ const void* AlfRpcInfo::Execution(void *value) //todo
         return NULL;
     }
 
-    PrintInfo("Received RPC Info:\n" + string(static_cast<char*>(value)));
+    PrintVerbose("Received RPC Info:\n" + string(static_cast<char*>(value)));
 
     if (isTransactionAvailable())
     {

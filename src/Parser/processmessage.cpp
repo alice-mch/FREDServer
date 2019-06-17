@@ -187,12 +187,12 @@ vector<vector<uint32_t> > ProcessMessage::readbackValues(const string& message, 
         }
     }
 
-    //PrintInfo("Message check begin");
+    //PrintVerbose("Message check begin");
     if (!Utility::checkMessageIntegrity(this->fullMessage, message, instructions.type))
     {
         return vector<vector<uint32_t> >();
     }
-    //PrintInfo("Message check end");
+    //PrintVerbose("Message check end");
 
     vector<string>& outVars = instructions.outVar;
     vector<uint32_t> values = Utility::splitAlfResponse(message, instructions.type);
@@ -259,7 +259,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                     else groupCommand->receivedResponse(&chainTopic, response);
                 }
 
-                PrintInfo("Updating service");
+                PrintVerbose("Updating service");
 
                 return;
             }

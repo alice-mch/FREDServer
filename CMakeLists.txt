@@ -48,4 +48,4 @@ file(GLOB SOURCES "src/main.cpp"
 	)
 
 add_executable(FREDServer ${SOURCES})
-target_link_libraries(FREDServer Alfred)
+target_link_libraries(FREDServer Alfred libboost_program_options.a)

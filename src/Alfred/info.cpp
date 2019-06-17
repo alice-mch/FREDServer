@@ -144,7 +144,7 @@ InfoInt::InfoInt(string name, ALFRED* alfred): Info::Info(name, alfred), DimInfo
 {
 	type = DIM_TYPE::INT;
 
-	PrintInfo(string("Info ") + name + " registered!");
+	PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoInt::~InfoInt()
@@ -185,7 +185,7 @@ InfoFloat::InfoFloat(string name, ALFRED* alfred): Info::Info(name, alfred), Dim
 {
 	type = DIM_TYPE::FLOAT;
 
-	PrintInfo(string("Info ") + name + " registered!");
+	PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoFloat::~InfoFloat()
@@ -227,7 +227,7 @@ InfoString::InfoString(string name, ALFRED* alfred): Info::Info(name, alfred), D
     type = DIM_TYPE::STRING;
     noLink[0] = '\0';
 
-    PrintInfo(string("Info ") + name + " registered!");
+    PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoString::~InfoString()
@@ -268,7 +268,7 @@ InfoData::InfoData(string name, ALFRED* alfred): Info::Info(name, alfred), DimIn
 {
 	type = DIM_TYPE::DATA;
 
-	PrintInfo(string("Info ") + name + " registered!");
+	PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoData::~InfoData()

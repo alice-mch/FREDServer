@@ -133,7 +133,7 @@ RpcInt::RpcInt(string name, ALFRED* alfred): Rpc::Rpc(name, alfred), DimRpc::Dim
 {
     type = DIM_TYPE::INT;
 
-    PrintInfo(string("Rpc ") + name + " registered!");
+    PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcInt::~RpcInt()
@@ -178,7 +178,7 @@ RpcFloat::RpcFloat(string name, ALFRED* alfred): Rpc::Rpc(name, alfred), DimRpc:
 {
     type = DIM_TYPE::FLOAT;
 
-    PrintInfo(string("Rpc ") + name + " registered!");
+    PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcFloat::~RpcFloat()
@@ -224,7 +224,7 @@ RpcString::RpcString(string name, ALFRED* alfred): Rpc::Rpc(name, alfred), DimRp
     type = DIM_TYPE::STRING;
     noLink[0] = '\0';
 
-    PrintInfo(string("Rpc ") + name + " registered!");
+    PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcString::~RpcString()
@@ -270,7 +270,7 @@ RpcData::RpcData(string name, ALFRED* alfred, size_t size, string formatIn, stri
     type = DIM_TYPE::DATA;
     this->size = size;
 
-    PrintInfo(string("Rpc ") + name + " registered!");
+    PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcData::~RpcData()
