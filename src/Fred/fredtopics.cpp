@@ -50,6 +50,9 @@ void FredTopics::registerUnit(string section, Mapping::Unit& unit, Instructions 
 
             topics[fullName].service = new ServiceString(fullName + "_ANS", this->fred);
             this->fred->RegisterService(topics[fullName].service);
+
+            topics[fullName].error = new ServiceString(fullName + "_ERR", this->fred);
+            this->fred->RegisterService(topics[fullName].error);
         }
     }
 }
@@ -72,6 +75,9 @@ void FredTopics::registerGroup(string section, Groups::Group& group)
 
     groupTopics[fullName].service = new ServiceString(fullName + "_ANS", this->fred);
     this->fred->RegisterService(groupTopics[fullName].service);
+
+    groupTopics[fullName].error = new ServiceString(fullName + "_ERR", this->fred);
+    this->fred->RegisterService(groupTopics[fullName].error);
 
     groupTopics[fullName].instruction = groupTopics[fullName].chainTopics[0]->instruction;
 
