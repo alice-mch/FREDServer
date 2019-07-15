@@ -398,5 +398,14 @@ string ProcessMessage::generateMapiMessage()
 void ProcessMessage::evaluateMapiMessage(string message, ChainTopic& chainTopic)
 {
     string response = mapi->processOutputMessage(message);
-    chainTopic.service->Update(response.c_str());
+
+    if (mapi->returnError)
+    {
+        chainTopic.error->Update(response.c_str());
+        mapi->returnError = false; //reset returnError
+    }
+    else
+    {
+        chainTopic.service->Update(response.c_str());
+    }
 }
