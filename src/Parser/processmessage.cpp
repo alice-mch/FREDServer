@@ -1,6 +1,7 @@
 #include <cctype>
 #include <math.h>
 #include <algorithm>
+#include <string>
 #include "Parser/processmessage.h"
 #include "Alfred/print.h"
 #include "Parser/utility.h"
@@ -182,17 +183,25 @@ vector<vector<uint32_t> > ProcessMessage::readbackValues(const string& message, 
     {
         if (!(isxdigit(message[i]) || message[i] == '\n' || message[i] == ','))
         {
-            PrintError("Invalid data received!");
-            return vector<vector<uint32_t> >();
+            PrintError("Invalid character received in RPC data:\n" + message + "\n");
+            throw runtime_error("Invalid character received in RPC data!");
         }
     }
 
-    //PrintVerbose("Message check begin");
-    if (!Utility::checkMessageIntegrity(this->fullMessage, message, instructions.type))
+    bool checkMessage;
+    try
+    {
+        checkMessage = Utility::checkMessageIntegrity(this->fullMessage, message, instructions.type);
+    }
+    catch (exception& ex)
+    {
+        throw runtime_error(ex.what());
+    }
+
+    if (!checkMessage)
     {
         return vector<vector<uint32_t> >();
     }
-    //PrintVerbose("Message check end");
 
     vector<string>& outVars = instructions.outVar;
     vector<uint32_t> values = Utility::splitAlfResponse(message, instructions.type);
@@ -231,73 +240,153 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
 {
     try
     {
-        if (!ignoreStatus)
+        if (!ignoreStatus) //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only
         {
-            if (message.find(FAILURE) != string::npos)
-            {
-                PrintError("Error message received: " + message.substr(FAILURE.length() + 1));
-                return;
-            }
-            else if (message.find(SUCCESS) != string::npos)
+            if (!(message.find(SUCCESS) != string::npos)) //not a SUCCESS
             {
                 string response;
-                vector<vector<uint32_t> > values = readbackValues(message.substr(SUCCESS.length() + 1), *chainTopic.instruction);
-                if (values.empty()) return;
+
+                if (message.empty()) //empty message
+                {
+                    response = "Empty response received!";
+                    PrintError(response);
+                }
+                else if (message.find(FAILURE) != string::npos) //FAILURE message
+                {
+                    PrintError("Error message received:\n" + message + "\n");
+                    replace(message.begin(), message.end(), '\n', ';');
+                    response = message;
+                }
+                else //unknown message
+                {
+                    PrintError("Unknown message received:\n" + message + "\n");
+                    replace(message.begin(), message.end(), '\n', ';');
+                    response = message;
+                }
+                
+                if (groupCommand == NULL)
+                {
+                    chainTopic.error->Update(response.c_str());
+                    PrintError("Updating error service!");
+                }
+                else groupCommand->receivedResponse(&chainTopic, response, true);
+
+                return;
+            }
+            else if (message.find(SUCCESS) != string::npos) //SUCCESS
+            {
+                string response;
+                vector<vector<uint32_t> > values;
+                try
+                {
+                    values = readbackValues(message.substr(SUCCESS.length() + 1), *chainTopic.instruction);
+                }
+                catch (exception& e)
+                {
+                    response = e.what();
+                    replace(message.begin(), message.end(), '\n', ';');
+                    response += ";" + message;
+                    if (groupCommand == NULL)
+                    {
+                        chainTopic.error->Update(response.c_str());
+                        PrintError("Updating error service!");
+                    }
+                    else groupCommand->receivedResponse(&chainTopic, response, true);
+                    
+                    return;
+                }
+
+                if (values.empty())
+                {
+                    response = "OK"; //FRED ACK response
+
+                    if (groupCommand == NULL)
+                    {
+                        PrintVerbose("Updating service");
+                        chainTopic.service->Update(response.c_str());
+                    }
+                    else groupCommand->receivedResponse(&chainTopic, response, false);
+
+                    return;
+                }
 
                 if (chainTopic.instruction->equation != "")
                 {
                     vector<double> realValues = calculateReadbackResult(values, *chainTopic.instruction);
                     response = Utility::readbackToString(realValues);
-
-                    if (groupCommand == NULL) chainTopic.service->Update(response.c_str());
-                    else groupCommand->receivedResponse(&chainTopic, response);
                 }
                 else
                 {
                     response = Utility::readbackToString(values, getMultiplicity());
-                    if (groupCommand == NULL) chainTopic.service->Update(response.c_str());
-                    else groupCommand->receivedResponse(&chainTopic, response);
                 }
 
-                PrintVerbose("Updating service");
+                if (groupCommand == NULL)
+                {
+                    PrintVerbose("Updating service");
+                    chainTopic.service->Update(response.c_str());
+                }
+                else groupCommand->receivedResponse(&chainTopic, response, false);
 
                 return;
             }
-
-            PrintError("Unknown message received!");
-            if (groupCommand)
-            {
-                groupCommand->receivedResponse(&chainTopic, "");
-            }
         }
-        else
+        else //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only 
         {
             string response;
-            vector<vector<uint32_t> > values = readbackValues(message, *chainTopic.instruction);
-            if (values.empty()) return;
+            vector<vector<uint32_t> > values;
+            try
+            {
+                values = readbackValues(message, *chainTopic.instruction);
+            }
+            catch (exception& e)
+            {
+                response = e.what();
+                replace(message.begin(), message.end(), '\n', ';');
+                response += ";" + message;
+                if (groupCommand == NULL)
+                {
+                    chainTopic.error->Update(response.c_str());
+                    PrintError("Updating error service!");
+                }
+                else groupCommand->receivedResponse(&chainTopic, response, true);
+                
+                return;
+            }
+
+            if (values.empty())
+            {
+                response = "OK"; //FRED ACK response  
+                chainTopic.service->Update(response.c_str());
+
+                return;
+            }
 
             if (chainTopic.instruction->equation != "")
             {
                 vector<double> realValues = calculateReadbackResult(values, *chainTopic.instruction);
                 response = Utility::readbackToString(realValues);
-                chainTopic.service->Update(response.c_str());
             }
             else
             {
                 response = Utility::readbackToString(values, getMultiplicity());
-                chainTopic.service->Update(response.c_str());
             }
 
+            chainTopic.service->Update(response.c_str());
+            
             return;
         }
     }
     catch (exception& e)
     {
-        PrintError("Error in message evaluation! Incorrect data received!");
-        if (groupCommand)
+        string response = "Error in message evaluation! Incorrect data received!";
+        PrintError(response);
+
+        if (groupCommand == NULL)
         {
-            groupCommand->receivedResponse(&chainTopic, "");
+            chainTopic.error->Update(response.c_str());
+            PrintError("Updating error service!");
         }
+        else groupCommand->receivedResponse(&chainTopic, response, true);
     }
 }
 
