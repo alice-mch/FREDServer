@@ -10,6 +10,7 @@ GroupCommand::GroupCommand(string name, Fred* fred, GroupTopic *topic): CommandS
     this->topic = topic;
     this->isFinished = false;
     this->queueThread = new thread(processRequest, this);
+    this->groupError = false;
 }
 
 GroupCommand::~GroupCommand()
@@ -65,9 +66,21 @@ void GroupCommand::processRequest(GroupCommand* command)
             if (i < command->topic->unitIds.size() - 1) response += "\n";
         }
 
-        command->topic->service->Update(response.c_str());
+        if (command->groupError) 
+        {           
+            command->topic->error->Update(response.c_str()); //_ERR
+            PrintError("Updating group error service!");
+        }
+        else
+        {
+            command->topic->service->Update(response.c_str()); //_ANS
+            PrintVerbose("Updating group service!");
+        }
+        
+        command->groupError = false;
         command->received.clear();
     }
+
 }
 
 void GroupCommand::newRequest()
@@ -75,8 +88,10 @@ void GroupCommand::newRequest()
     lock.unlock();
 }
 
-void GroupCommand::receivedResponse(ChainTopic *topic, string response)
+void GroupCommand::receivedResponse(ChainTopic *topic, string response, bool error)
 {
+    if (error) groupError = true;
+
     size_t idx = distance(this->topic->chainTopics.begin(), find(this->topic->chainTopics.begin(), this->topic->chainTopics.end(), topic));
     this->received[this->topic->unitIds[idx]] = response;
 }

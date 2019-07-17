@@ -36,6 +36,7 @@ string MapiExample::processOutputMessage(string output)
     }
     else
     {
+        returnError = true;
         response = "Error";
     }
 
