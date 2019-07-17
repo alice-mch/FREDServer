@@ -81,13 +81,15 @@ void FredTopics::registerGroup(string section, Groups::Group& group)
 
 void FredTopics::registerMapiObject(string topic, MapiInterface* mapi)
 {
-    try
+    map<string, ChainTopic>::iterator it = topics.find(topic);
+    if (it == topics.end())
+    {
+        PrintError("Requested MAPI topic " + topic + " is not a registered topic!");
+        throw runtime_error("Requested MAPI topic " + topic + " is not a registered topic!");
+    }
+    else
     {
         topics[topic].mapi = mapi;
-        PrintVerbose("Mapi object registered to topic " + topic);
-    }
-    catch (const exception& e)
-    {
-        PrintError("Invalid topic requested in MAPI!");
+        PrintVerbose("Mapi object registered to " + topic);
     }
 }

@@ -17,9 +17,9 @@ int main(int argc, char** argv)
 	namespace po = boost::program_options;
 	po::options_description description("FRED options");
 	description.add_options()
-      ("help, h", "Print help message")
-      ("verbose, v", "Verbose output")
-      ("parser, p", "Parse config files then exit");
+    ("help, h", "Print help message")
+    ("verbose, v", "Verbose output")
+    ("parser, p", "Parse config files then exit");
 
     po::variables_map vm;
 
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
     }
     catch (po::error& e)
     {
-      PrintError(e.what());
+        PrintError(e.what());
     	cerr << description << endl;
     	return 0;
     }
@@ -53,8 +53,15 @@ int main(int argc, char** argv)
     pair<string, string> config = Fred::readConfigFile();
     Fred fred(config.first, config.second, "./sections");
 
-    //MapiExample mapiExample;
-    //fred.registerMapiObject("FRED1/MAPI_EXAMPLE/LOOP0/TEST", &mapiExample);
+    try
+    {
+        //MapiExample mapiExample;
+        //fred.registerMapiObject("FRED1/MAPI_EXAMPLE/LOOP0/TEST", &mapiExample);
+    }
+    catch (exception& e)
+    {
+        exit(-1);
+    }
 
     fred.Start();
     return 0;
