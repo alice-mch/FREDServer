@@ -50,6 +50,9 @@ void FredTopics::registerUnit(string section, Mapping::Unit& unit, Instructions 
 
             topics[fullName].service = new ServiceString(fullName + "_ANS", this->fred);
             this->fred->RegisterService(topics[fullName].service);
+
+            topics[fullName].error = new ServiceString(fullName + "_ERR", this->fred);
+            this->fred->RegisterService(topics[fullName].error);
         }
     }
 }
@@ -73,6 +76,9 @@ void FredTopics::registerGroup(string section, Groups::Group& group)
     groupTopics[fullName].service = new ServiceString(fullName + "_ANS", this->fred);
     this->fred->RegisterService(groupTopics[fullName].service);
 
+    groupTopics[fullName].error = new ServiceString(fullName + "_ERR", this->fred);
+    this->fred->RegisterService(groupTopics[fullName].error);
+
     groupTopics[fullName].instruction = groupTopics[fullName].chainTopics[0]->instruction;
 
     groupTopics[fullName].inVars = group.inVars;
@@ -81,13 +87,15 @@ void FredTopics::registerGroup(string section, Groups::Group& group)
 
 void FredTopics::registerMapiObject(string topic, MapiInterface* mapi)
 {
-    try
+    map<string, ChainTopic>::iterator it = topics.find(topic);
+    if (it == topics.end())
+    {
+        PrintError("Requested MAPI topic " + topic + " is not a registered topic!");
+        throw runtime_error("Requested MAPI topic " + topic + " is not a registered topic!");
+    }
+    else
     {
         topics[topic].mapi = mapi;
-        PrintInfo("Mapi object registered to topic " + topic);
-    }
-    catch (const exception& e)
-    {
-        PrintError("Invalid topic requested in MAPI!");
+        PrintVerbose("Mapi object registered to " + topic);
     }
 }

@@ -22,7 +22,7 @@ public:
     };
 
     Groups(vector<string> data = vector<string>());
-    void calculateIds(Mapping& mapping);
+    void calculateIds(Mapping& mapping, vector<string> masking);
     vector<Group>& getGroups();
 
 private:

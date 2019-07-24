@@ -112,9 +112,9 @@ vector<Section> Parser::parseSections()
 
                     // next line will segfault if Mapping section is bad
                     //  e.g. wasn't processed due to bad section name
-                    section.groups.calculateIds(section.mapping);
+                    section.groups.calculateIds(section.mapping, maskingLines);
 
-                    checkGroup(section);  //check if group topics are existing
+                    checkGroup(section); //check if group topics are existing
                 }
                 catch (exception& e)
                 {
@@ -144,6 +144,12 @@ void Parser::checkGroup(Section section)
             PrintError("Topic " + i->topicName + " from group " + i->name + " in section " 
                 + section.getName() + " is not an existing topic!");
             throw runtime_error("Non existing group topic");
+        }
+
+        if(i->unitIds.size() == 0)
+        {
+            PrintError("Group " + i->name + " in section " + section.getName() + " has no units!");
+            throw runtime_error("Group with no units");
         }
 
         for (size_t j = 0; j < i->unitIds.size(); j++)

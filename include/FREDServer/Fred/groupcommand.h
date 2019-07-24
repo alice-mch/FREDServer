@@ -17,13 +17,14 @@ public:
     GroupCommand(string name, Fred* fred, GroupTopic* topic);
     ~GroupCommand();
 
-    void receivedResponse(ChainTopic* topic, string response);
+    void receivedResponse(ChainTopic* topic, string response, bool error);
 
 private:
     thread* queueThread;
     GroupTopic* topic;
     bool isFinished;
     mutex lock;
+    bool groupError;
 
     map<int32_t, string> received;
 

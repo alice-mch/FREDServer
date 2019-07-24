@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include <sstream>
+#include <cctype>
 #include <algorithm>
 #include "Parser/utility.h"
 #include "Parser/calculator.h"
@@ -84,10 +85,8 @@ vector<vector<uint32_t> > Utility::splitMessage2Num(const string &text)
 
 void Utility::removeWhiteSpaces(string& text)
 {
-    text.erase(remove(text.begin(), text.end(), ' '), text.end());
-    text.erase(remove(text.begin(), text.end(), '\t'), text.end());
-    text.erase(remove(text.begin(), text.end(), '\n'), text.end());
-    text.erase(remove(text.begin(), text.end(), '\r'), text.end());
+    text.erase(remove_if(text.begin(), text.end(), [](unsigned char c){return isspace(c);}), text.end());
+    text.erase(remove_if(text.begin(), text.end(), [](unsigned char c){return iscntrl(c);}), text.end());
 }
 
 void Utility::removeComment(string& text)
@@ -193,7 +192,7 @@ bool Utility::checkMessageIntegrity(const string& request, const string& respons
     if (reqVec.size() != resVec.size())
     {
         PrintError("Invalid number of lines received!");
-        return false;
+        throw runtime_error("Invalid number of lines received!"); 
     }
 
     try
@@ -207,19 +206,25 @@ bool Utility::checkMessageIntegrity(const string& request, const string& respons
             {
                 size_t nonZeroPos = reqVec[i].find_first_not_of('0');
                 size_t commaPos = reqVec[i].find(",");
-                if (reqVec[i].substr(nonZeroPos, commaPos-nonZeroPos) != resVec[i].substr(0, resVec[i].find(","))) return false;
+                if (reqVec[i].substr(nonZeroPos, commaPos-nonZeroPos) != resVec[i].substr(0, resVec[i].find(",")))
+                {
+                    return false;
+                }
             }
             else if (type == Instructions::Type::SWT)
             {
                 if (resVec[i] == "0") continue;
-                if (reqVec[i].substr(reqVec[i].size() - 8, 4) != resVec[i].substr(resVec[i].size() - 8, 4)) return false;
+                if (reqVec[i].substr(reqVec[i].size() - 8, 4) != resVec[i].substr(resVec[i].size() - 8, 4))
+                {
+                    return false;
+                }
             }
         }
     }
     catch (exception& e)
     {
         PrintError("Integrity check of received message failed!");
-        return false;
+        throw runtime_error("Integrity check of received message failed!"); 
     }
 
     return true;

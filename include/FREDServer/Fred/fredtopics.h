@@ -22,6 +22,7 @@ struct ChainTopic
     string name;
     CommandString* command;
     ServiceString* service;
+    ServiceString* error;
     Instructions::Instruction* instruction;
     AlfRpcInfo* alfLink;
     Queue* alfQueue;
@@ -40,6 +41,7 @@ struct GroupTopic
     string name;
     GroupCommand* command;
     ServiceString* service;
+    ServiceString* error;
     Instructions::Instruction* instruction;
     vector<ChainTopic*> chainTopics;
     map<string, vector<uint32_t> > inVars;

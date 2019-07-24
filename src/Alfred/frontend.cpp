@@ -222,7 +222,7 @@ void FrontEnd::RegisterFunction(Function* function)
 	if (function)
 	{
 		functions[function->Name()] = function;
-		PrintInfo(string("Function ") + function->Name() + " registered!");
+		PrintVerbose(string("Function ") + function->Name() + " registered!");
 	}
 }
 
