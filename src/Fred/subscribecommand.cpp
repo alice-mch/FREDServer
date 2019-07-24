@@ -23,7 +23,7 @@ const void* SubscribeCommand::Execution(void *value)
     }
 
     string request(static_cast<char*>(value));
-    PrintInfo("Received command:\n" + request);
+    PrintVerbose("Received command:\n" + request);
 
     if (request.size() > 0)
     {

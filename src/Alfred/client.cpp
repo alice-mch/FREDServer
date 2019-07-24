@@ -102,7 +102,7 @@ ClientInt::ClientInt(string name, ALFRED* alfred): Client::Client(name, alfred)
 	size = 4;
 	type = DIM_TYPE::INT;
 
-	PrintInfo(string("Client ") + name + " registered!");
+	PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientInt::~ClientInt()
@@ -122,7 +122,7 @@ ClientFloat::ClientFloat(string name, ALFRED* alfred): Client::Client(name, alfr
 	size = 4;
 	type = DIM_TYPE::FLOAT;
 
-	PrintInfo(string("Client ") + name + " registered!");
+	PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientFloat::~ClientFloat()
@@ -141,7 +141,7 @@ ClientString::ClientString(string name, ALFRED* alfred): Client::Client(name, al
 {
     type = DIM_TYPE::STRING;
 
-    PrintInfo(string("Client ") + name + " registered!");
+    PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientString::~ClientString()
@@ -161,7 +161,7 @@ ClientData::ClientData(string name, ALFRED* alfred, size_t size): Client::Client
 	this->size = size;
 	type = DIM_TYPE::DATA;
 
-	PrintInfo(string("Client ") + name + " registered!");
+	PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientData::~ClientData()

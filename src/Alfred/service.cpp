@@ -131,7 +131,7 @@ ServiceInt::ServiceInt(string name, ALFRED* alfred): Service::Service(name, alfr
 	service = new DimService(name.c_str(), *(int*)value);
 	type = DIM_TYPE::INT;
 
-	PrintInfo(string("Service ") + name + " registered!");
+	PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceInt::~ServiceInt()
@@ -149,7 +149,7 @@ ServiceFloat::ServiceFloat(string name, ALFRED* alfred): Service::Service(name, 
 	service = new DimService(name.c_str(), *(float*)value);
 	type = DIM_TYPE::FLOAT;
 
-	PrintInfo(string("Service ") + name + " registered!");
+	PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceFloat::~ServiceFloat()
@@ -166,7 +166,7 @@ ServiceString::ServiceString(string name, ALFRED* alfred): Service::Service(name
     service = new DimService(name.c_str(), (char*)value);
     type = DIM_TYPE::STRING;
 
-    PrintInfo(string("Service ") + name + " registered!");
+    PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceString::~ServiceString()
@@ -184,7 +184,7 @@ ServiceData::ServiceData(string name, ALFRED* alfred, size_t size, string format
 	service = new DimService(name.c_str(), format.c_str(), value, size);
 	type = DIM_TYPE::DATA;
 
-	PrintInfo(string("Service ") + name + " registered!");
+	PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceData::~ServiceData()

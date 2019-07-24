@@ -21,7 +21,7 @@ ALFRED::ALFRED(string server, string dns, string network)
 
 	if (ServerRegistered(server))
 	{
-		PrintError(string("Server ") + server + " is already running!");
+		PrintError(string("Server ") + server + " is already registered on DIM DNS!");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -350,7 +350,7 @@ void ALFRED::Connect(CONNECT type, string source, string destination)
 			exit(EXIT_FAILURE);
 	}
 
-    PrintInfo(source + " connected to " + destination);
+    PrintVerbose(source + " connected to " + destination);
 }
 
 void ALFRED::Disconnect(CONNECT type, string source, string destination)
@@ -413,7 +413,7 @@ void ALFRED::Disconnect(CONNECT type, string source, string destination)
             exit(EXIT_FAILURE);
     }
 
-    PrintInfo(source + " disconnected from " + destination);
+    PrintVerbose(source + " disconnected from " + destination);
 }
 
 void ALFRED::ConnectCmdSrv(string source, string destination, bool connect)

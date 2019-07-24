@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "Fred/Config/groups.h"
+#include "Alfred/print.h"
 #include "Parser/utility.h"
 #include "Alfred/print.h"
 
@@ -22,7 +23,6 @@ Groups::Groups(vector<string> data)
                     i++;
                 }
             }
-
             processGroup(left, right, inVars);
         }
     }
@@ -54,8 +54,25 @@ void Groups::processGroup(string& left, string& right, vector<string> &inVars)
     groups.push_back(group);
 }
 
-void Groups::calculateIds(Mapping& mapping)
+void Groups::calculateIds(Mapping& mapping, vector<string> masking)
 {
+    vector<int32_t> mask, allIds;
+    string fed;
+
+    if (masking.size())
+    {
+        string maskString = masking[0];
+        fed = maskString.substr(0, maskString.find("["));
+        maskString = maskString.substr(maskString.find("[") + 1, maskString.find("]") - maskString.find("[") - 1);
+        Utility::removeWhiteSpaces(maskString);
+        vector<string> textMask = Utility::splitString(maskString, ",");
+
+        for (size_t i = 0; i < textMask.size(); i++)
+        {
+            mask.push_back(stoi(textMask[i]));
+        }
+    }
+
     for (size_t g = 0; g < groups.size(); g++)
     {
         vector<int32_t> all;
@@ -76,6 +93,7 @@ void Groups::calculateIds(Mapping& mapping)
         sort(all.begin(), all.end());
 
         string range = groups[g].range;
+        
         size_t pos;
         while ((pos = range.find("..")) != string::npos)
         {
@@ -109,7 +127,38 @@ void Groups::calculateIds(Mapping& mapping)
         }
 
         vector<string> textIds = Utility::splitString(range, ",");
-        for (size_t i = 0; i < textIds.size(); i++) groups[g].unitIds.push_back(stoi(textIds[i]));
+        vector<int32_t> ids;
+
+        for (size_t i = 0; i < textIds.size(); i++)
+        {
+            ids.push_back(stoi(textIds[i]));
+            allIds.push_back(stoi(textIds[i]));
+        }
+
+        for (auto it = ids.begin(); it != ids.end(); it++)
+        {
+            if (find(mask.begin(), mask.end(), *it) != mask.end())
+            {
+                ids.erase(it--);
+            }
+        }
+        
+        groups[g].unitIds = ids;         
+    }
+
+    for (auto it = mask.begin(); it != mask.end(); it++)
+    {
+        PrintWarning(fed + "[" + to_string(*it) + "] is masked!");
+
+        if (find(allIds.begin(), allIds.end(), *it) != allIds.end())
+        {
+            mask.erase(it--);
+        }
+    }
+
+    for (size_t i = 0; i < mask.size(); i++)
+    {
+        PrintWarning(fed + " " + to_string(mask[i]) + " is masked but it is not in a group!");
     }
 }
 

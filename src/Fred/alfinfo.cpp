@@ -15,7 +15,7 @@ const void* AlfInfo::Execution(void* value)
         return NULL;
     }
 
-    //PrintInfo("Received Info:\n" + string(static_cast<char*>(value)));    //ignored because of lot of messages
+    //PrintDebug("Received Info:\n" + string(static_cast<char*>(value)));    //ignored because of lot of messages
 
     if (isTransactionAvailable())
     {
