@@ -25,10 +25,10 @@ const void* GroupCommand::Execution(void *value)
 {
     if (!value)
     {
-        PrintError("Invalid request, no value received!");
+        PrintError(topic->name, "Invalid request, no value received!");
     }
 
-    PrintVerbose("Received group command:\n");
+    PrintVerbose(topic->name, "Received group command:\n");
 
     for (size_t i = 0; i < topic->chainTopics.size(); i++)
     {
@@ -69,12 +69,12 @@ void GroupCommand::processRequest(GroupCommand* command)
         if (command->groupError) 
         {           
             command->topic->error->Update(response.c_str()); //_ERR
-            PrintError("Updating group error service!");
+            PrintError(command->topic->name, "Updating group error service!");
         }
         else
         {
             command->topic->service->Update(response.c_str()); //_ANS
-            PrintVerbose("Updating group service!");
+            PrintVerbose(command->topic->name, "Updating group service!");
         }
         
         command->groupError = false;

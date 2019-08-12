@@ -53,9 +53,10 @@ int main(int argc, char** argv)
     pair<string, string> config = Fred::readConfigFile();
     Fred fred(config.first, config.second, "./sections");
 
+    //MapiExample mapiExample;
+    
     try
     {
-        //MapiExample mapiExample;
         //fred.registerMapiObject("FRED1/MAPI_EXAMPLE/LOOP0/TEST", &mapiExample);
     }
     catch (exception& e)

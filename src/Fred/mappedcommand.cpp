@@ -19,12 +19,12 @@ const void* MappedCommand::Execution(void *value)
 {
     if (!value)
     {
-        PrintError("Invalid request, no value received!");
+        PrintError(name, "Invalid request, no value received!");
     }
 
     string request(static_cast<char*>(value));
 
-    PrintVerbose("Received command:\n" + request);
+    PrintVerbose(name, "Received command: \n" + request);
 
     if (topic->mapi == NULL)
     {
@@ -35,6 +35,7 @@ const void* MappedCommand::Execution(void *value)
         }
         else
         {
+            PrintError(name, "Invalid input received!");
             delete processMessage;
         }
     }

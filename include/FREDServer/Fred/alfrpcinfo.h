@@ -15,6 +15,7 @@ private:
     const void* Execution(void* value);
     void clearTransaction();
     bool isTransactionAvailable();
+    string name;
 
 public:
     AlfRpcInfo(string name, string dns, Fred* fred);

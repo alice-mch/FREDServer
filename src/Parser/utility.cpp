@@ -191,7 +191,6 @@ bool Utility::checkMessageIntegrity(const string& request, const string& respons
 
     if (reqVec.size() != resVec.size())
     {
-        PrintError("Invalid number of lines received!");
         throw runtime_error("Invalid number of lines received!"); 
     }
 
@@ -223,7 +222,6 @@ bool Utility::checkMessageIntegrity(const string& request, const string& respons
     }
     catch (exception& e)
     {
-        PrintError("Integrity check of received message failed!");
         throw runtime_error("Integrity check of received message failed!"); 
     }
 
