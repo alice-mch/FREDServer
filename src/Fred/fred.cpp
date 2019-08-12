@@ -8,6 +8,7 @@
 #include "Fred/fredMode.h"
 #include "Fred/Mapi/mapi.h"
 #include "Fred/Mapi/iterativemapi.h"
+#include "Fred/Mapi/mapigroup.h"
 
 Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRED(fredName, dnsName), alfClients(this), fredTopics(this)
 {

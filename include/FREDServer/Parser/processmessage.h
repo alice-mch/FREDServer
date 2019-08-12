@@ -6,6 +6,7 @@
 #include "Fred/Config/instructions.h"
 #include "Fred/Mapi/mapi.h"
 #include "Fred/Mapi/iterativemapi.h"
+#include "Fred/Mapi/mapigroup.h"
 
 using namespace std;
 

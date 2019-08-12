@@ -7,6 +7,7 @@
 #include "Fred/fredtopics.h"
 #include "Fred/Mapi/mapi.h"
 #include "Fred/Mapi/iterativemapi.h"
+#include "Fred/Mapi/mapigroup.h"
 
 class Fred: public ALFRED
 {

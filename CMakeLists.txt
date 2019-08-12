@@ -46,6 +46,7 @@ file(GLOB SOURCES "src/main.cpp"
                 "src/Fred/Config/mapping.cpp"
                 "src/Fred/Mapi/mapi.cpp"
                 "src/Fred/Mapi/iterativemapi.cpp"
+                "src/Fred/Mapi/mapigroup.cpp"
                 "src/Mapi/*.cpp"
 	)
 

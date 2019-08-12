@@ -12,6 +12,7 @@
 #include "Alfred/service.h"
 #include "Fred/Mapi/mapi.h"
 #include "Fred/Mapi/iterativemapi.h"
+#include "Fred/Mapi/mapigroup.h"
 
 class Fred;
 class AlfRpcInfo;

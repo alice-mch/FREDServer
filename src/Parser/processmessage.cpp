@@ -97,11 +97,6 @@ ProcessMessage::ProcessMessage(Mapi* mapi, string input)
 {
     this->mapi = mapi;
     this->fullMessage = input;
-
-    //reset booleans so that the new request is virgin?
-    // this->mapi->noReturn = false;
-    // this->mapi->noRpcRequest = false;
-    // this->mapi->returnError = false;
 }
 
 bool ProcessMessage::checkMessage(string& message)
