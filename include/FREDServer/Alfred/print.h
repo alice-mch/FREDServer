@@ -19,4 +19,9 @@ void PrintWarning(string message);
 void PrintInfo(string message);
 void PrintVerbose(string message);
 
+void PrintError(string topic, string message);
+void PrintWarning(string topic, string message);
+void PrintInfo(string topic, string message);
+void PrintVerbose(string topic, string message);
+
 #endif

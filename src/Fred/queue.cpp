@@ -40,7 +40,7 @@ void Queue::clearQueue(Queue *queue)
             //do processing
             request.second->alfLink->setTransaction(request);
 
-            PrintVerbose("Parsing message");
+            PrintVerbose(request.second->name, "Parsing message");
 
             string fullMessage;
 
@@ -67,7 +67,7 @@ void Queue::clearQueue(Queue *queue)
             if (!request.second->instruction->subscribe || request.second->mapi != NULL)
             {
                 buffer = strdup(fullMessage.c_str());
-                PrintVerbose("Sending RPC request:\n" + string(buffer));
+                PrintVerbose(request.second->name, "Sending RPC request:\n" + string(buffer));
                 request.second->alfLink->Send(buffer);
             }
             else
@@ -78,7 +78,7 @@ void Queue::clearQueue(Queue *queue)
                     RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, true);
                     fullMessage = request.second->name + "\n" + to_string(request.second->interval) + "\n" + fullMessage;
                     buffer = strdup(fullMessage.c_str());
-                    PrintVerbose("Sending RPC subscribe request:\n" + string(buffer));
+                    PrintVerbose(request.second->name, "Sending RPC subscribe request:\n" + string(buffer));
                     request.second->alfInfo->setTransaction(request);
                     rpcInfo->Send(buffer);
                 }
@@ -87,7 +87,7 @@ void Queue::clearQueue(Queue *queue)
                     RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, false);
                     fullMessage = request.second->name;
                     buffer = strdup(fullMessage.c_str());
-                    PrintVerbose("Sending RPC unsubscribe request:\n");
+                    PrintVerbose(request.second->name, "Sending RPC unsubscribe request:\n");
                     request.second->alfInfo->clearTransaction();
                     rpcInfo->Send(buffer);
                 }

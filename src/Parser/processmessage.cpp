@@ -24,7 +24,6 @@ ProcessMessage::ProcessMessage(string message, int32_t placeId)
         }
         catch (exception& e)
         {
-            PrintError("Invalid input received!");
             correct = false;
             return;
         }
@@ -39,6 +38,11 @@ ProcessMessage::ProcessMessage(string message, int32_t placeId)
             input.push_back(vector<uint32_t>());
             input[0].push_back(uint32_t(placeId));
         }
+    }
+    else
+    {
+        correct = false;
+        return;
     }
 }
 
@@ -92,7 +96,6 @@ bool ProcessMessage::checkMessage(string& message)
     {
         if (!(isxdigit(message[i])  || message[i] == ',' || message[i] == '\n' || message[i] == 'x'))
         {
-            PrintError("Request contains forbidden characters!");
             return false;
         }
     }
@@ -183,8 +186,7 @@ vector<vector<uint32_t> > ProcessMessage::readbackValues(const string& message, 
     {
         if (!(isxdigit(message[i]) || message[i] == '\n' || message[i] == ','))
         {
-            PrintError("Invalid character received in RPC data:\n" + message + "\n");
-            throw runtime_error("Invalid character received in RPC data!");
+            throw runtime_error("Invalid character received in RPC data:\n" + message + "\n");
         }
     }
 
@@ -249,17 +251,17 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                 if (message.empty()) //empty message
                 {
                     response = "Empty response received!";
-                    PrintError(response);
+                    PrintError(chainTopic.name, response);
                 }
                 else if (message.find(FAILURE) != string::npos) //FAILURE message
                 {
-                    PrintError("Error message received:\n" + message + "\n");
+                    PrintError(chainTopic.name, "Error message received:\n" + message + "\n");
                     replace(message.begin(), message.end(), '\n', ';');
                     response = message;
                 }
                 else //unknown message
                 {
-                    PrintError("Unknown message received:\n" + message + "\n");
+                    PrintError(chainTopic.name, "Unknown message received:\n" + message + "\n");
                     replace(message.begin(), message.end(), '\n', ';');
                     response = message;
                 }
@@ -267,7 +269,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                 if (groupCommand == NULL)
                 {
                     chainTopic.error->Update(response.c_str());
-                    PrintError("Updating error service!");
+                    PrintError(chainTopic.name, "Updating error service!");
                 }
                 else groupCommand->receivedResponse(&chainTopic, response, true);
 
@@ -283,13 +285,14 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                 }
                 catch (exception& e)
                 {
+                    PrintError(chainTopic.name, e.what());
                     response = e.what();
                     replace(message.begin(), message.end(), '\n', ';');
                     response += ";" + message;
                     if (groupCommand == NULL)
                     {
                         chainTopic.error->Update(response.c_str());
-                        PrintError("Updating error service!");
+                        PrintError(chainTopic.name, "Updating error service!");
                     }
                     else groupCommand->receivedResponse(&chainTopic, response, true);
                     
@@ -302,7 +305,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
 
                     if (groupCommand == NULL)
                     {
-                        PrintVerbose("Updating service");
+                        PrintVerbose(chainTopic.name, "Updating service");
                         chainTopic.service->Update(response.c_str());
                     }
                     else groupCommand->receivedResponse(&chainTopic, response, false);
@@ -322,7 +325,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
 
                 if (groupCommand == NULL)
                 {
-                    PrintVerbose("Updating service");
+                    PrintVerbose(chainTopic.name, "Updating service");
                     chainTopic.service->Update(response.c_str());
                 }
                 else groupCommand->receivedResponse(&chainTopic, response, false);
@@ -340,13 +343,14 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
             }
             catch (exception& e)
             {
+                PrintError(chainTopic.name, e.what());
                 response = e.what();
                 replace(message.begin(), message.end(), '\n', ';');
                 response += ";" + message;
                 if (groupCommand == NULL)
                 {
                     chainTopic.error->Update(response.c_str());
-                    PrintError("Updating error service!");
+                    PrintError(chainTopic.name, "Updating error service!");
                 }
                 else groupCommand->receivedResponse(&chainTopic, response, true);
                 
@@ -379,12 +383,12 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
     catch (exception& e)
     {
         string response = "Error in message evaluation! Incorrect data received!";
-        PrintError(response);
+        PrintError(chainTopic.name, response);
 
         if (groupCommand == NULL)
         {
             chainTopic.error->Update(response.c_str());
-            PrintError("Updating error service!");
+            PrintError(chainTopic.name, "Updating error service!");
         }
         else groupCommand->receivedResponse(&chainTopic, response, true);
     }
@@ -402,10 +406,12 @@ void ProcessMessage::evaluateMapiMessage(string message, ChainTopic& chainTopic)
     if (mapi->returnError)
     {
         chainTopic.error->Update(response.c_str());
+        PrintError(chainTopic.name, "Updating MAPI error service!");
         mapi->returnError = false; //reset returnError
     }
     else
     {
         chainTopic.service->Update(response.c_str());
+        PrintVerbose(chainTopic.name, "Updating MAPI service");
     }
 }
