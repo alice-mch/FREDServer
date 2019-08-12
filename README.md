@@ -1,6 +1,7 @@
 # FREDServer
 
 ## Version History
+* v1.7.1 - Adds Topic names to relevant output lines (more informative)
 * v1.7 - Adds Error channel: _ERR service joins _REQ and _ANS
  - _ERR will publish errors from ALF as a string, _ANS will not be updated
 * v1.6 - Adds '--help', '--parser', and '--verbose' modes, minor bugfixes
