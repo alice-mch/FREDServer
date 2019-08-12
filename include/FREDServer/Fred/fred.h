@@ -6,6 +6,7 @@
 #include "Fred/alfclients.h"
 #include "Fred/fredtopics.h"
 #include "Fred/Mapi/mapi.h"
+#include "Fred/Mapi/iterativemapi.h"
 
 class Fred: public ALFRED
 {

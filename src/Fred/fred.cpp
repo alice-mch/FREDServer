@@ -7,6 +7,7 @@
 #include "Fred/cruregistercommand.h"
 #include "Fred/fredMode.h"
 #include "Fred/Mapi/mapi.h"
+#include "Fred/Mapi/iterativemapi.h"
 
 Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRED(fredName, dnsName), alfClients(this), fredTopics(this)
 {

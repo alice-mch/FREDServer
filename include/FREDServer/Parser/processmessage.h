@@ -5,6 +5,7 @@
 #include <vector>
 #include "Fred/Config/instructions.h"
 #include "Fred/Mapi/mapi.h"
+#include "Fred/Mapi/iterativemapi.h"
 
 using namespace std;
 

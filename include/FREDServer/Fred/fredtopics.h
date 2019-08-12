@@ -11,6 +11,7 @@
 #include "Fred/Config/groups.h"
 #include "Alfred/service.h"
 #include "Fred/Mapi/mapi.h"
+#include "Fred/Mapi/iterativemapi.h"
 
 class Fred;
 class AlfRpcInfo;
