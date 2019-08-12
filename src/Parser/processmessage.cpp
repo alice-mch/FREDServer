@@ -11,6 +11,9 @@
 const string ProcessMessage::SUCCESS = "success";
 const string ProcessMessage::FAILURE = "failure";
 
+/*
+ * ProcessMessage constructor for regular topics 
+ */
 ProcessMessage::ProcessMessage(string message, int32_t placeId)
 {
     groupCommand = NULL;
@@ -46,6 +49,9 @@ ProcessMessage::ProcessMessage(string message, int32_t placeId)
     }
 }
 
+/*
+ * ProcessMessage constructor for group topics 
+ */
 ProcessMessage::ProcessMessage(map<string, vector<uint32_t> > inVars, int32_t placeId, GroupCommand* groupCommand)
 {
     this->groupCommand = groupCommand;
@@ -84,10 +90,18 @@ ProcessMessage::ProcessMessage(map<string, vector<uint32_t> > inVars, int32_t pl
     }
 }
 
-ProcessMessage::ProcessMessage(MapiInterface* mapi, string input)
+/*
+ * ProcessMessage constructor for MAPI topics 
+ */
+ProcessMessage::ProcessMessage(Mapi* mapi, string input)
 {
     this->mapi = mapi;
     this->fullMessage = input;
+
+    //reset booleans so that the new request is virgin?
+    // this->mapi->noReturn = false;
+    // this->mapi->noRpcRequest = false;
+    // this->mapi->returnError = false;
 }
 
 bool ProcessMessage::checkMessage(string& message)
@@ -402,15 +416,23 @@ void ProcessMessage::evaluateMapiMessage(string message, ChainTopic& chainTopic)
 {
     string response = mapi->processOutputMessage(message);
 
-    if (mapi->returnError)
+    if (!mapi->noReturn)
     {
-        chainTopic.error->Update(response.c_str());
-        PrintError(chainTopic.name, "Updating MAPI error service!");
-        mapi->returnError = false; //reset returnError
+        if (mapi->returnError)
+        {
+            chainTopic.error->Update(response.c_str());
+            PrintError(chainTopic.name, "Updating MAPI error service!");
+            mapi->returnError = false; //reset returnError
+        }
+        else
+        {
+            chainTopic.service->Update(response.c_str());
+            PrintVerbose(chainTopic.name, "Updating MAPI service");
+        }
     }
     else
     {
-        chainTopic.service->Update(response.c_str());
-        PrintVerbose(chainTopic.name, "Updating MAPI service");
+        PrintVerbose(chainTopic.name, "Mapi is noReturn");
+        mapi->noReturn = false; //reset noReturn
     }
 }

@@ -5,7 +5,7 @@
 #include "Fred/section.h"
 #include "Fred/alfclients.h"
 #include "Fred/fredtopics.h"
-#include "Fred/mapiinterface.h"
+#include "Fred/Mapi/mapi.h"
 
 class Fred: public ALFRED
 {
@@ -29,7 +29,7 @@ public:
 
     string getFredDns();
 
-    void registerMapiObject(string topic, MapiInterface* mapi);
+    void registerMapiObject(string topic, Mapi* mapi);
 };
 
 #endif // FRED_H
