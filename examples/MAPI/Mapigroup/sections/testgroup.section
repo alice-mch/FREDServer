@@ -1,0 +1,10 @@
+TESTGROUPS = {
+    INSTRUCTIONS = {
+        PATH = ../boards/testgroup/testgroup.conf
+    }
+
+    MAPPING = {
+       TESTGROUP[0] = ALF-1/SERIAL_0/LINK_0
+    }
+}
+
