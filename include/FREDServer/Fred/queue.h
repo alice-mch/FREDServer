@@ -16,13 +16,13 @@ class Fred;
 class Queue
 {
 public:
-    Queue(int32_t alfId, Fred* fred);
+    Queue(string alfId, Fred* fred);
     ~Queue();
 
     void newRequest(pair<ProcessMessage *, ChainTopic *> request);
 
 private:
-    int32_t id;
+    string id;
     Fred* fred;
     mutex lock;
     thread* queueThread;

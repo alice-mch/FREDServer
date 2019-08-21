@@ -3,7 +3,7 @@
 #include "Fred/alfinfo.h"
 #include "Alfred/print.h"
 
-Queue::Queue(int32_t alfId, Fred* fred)
+Queue::Queue(string alfId, Fred* fred)
 {
     this->id = alfId;
     this->fred = fred;

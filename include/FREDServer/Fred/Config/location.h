@@ -15,16 +15,16 @@ public:
     {
         struct SerialEntry
         {
-            int32_t id;
+            int32_t id; //SERIAL_ID
             vector<int32_t> links;
         };
 
         string dns;
-        int32_t id;
+        string id; //ALF_ID
         map<int32_t, SerialEntry> serials;
     };
 
-    map<int32_t, AlfEntry> alfs;
+    map<string, AlfEntry> alfs;
 
 };
 
