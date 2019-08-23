@@ -35,7 +35,10 @@ const void* MappedCommand::Execution(void *value)
         }
         else
         {
-            PrintError(name, "Invalid input received!");
+            string error = "Invalid input received!";
+            PrintError(name, error);
+            topic->error->Update(error.c_str());
+            PrintError(topic->name, "Updating error service!");
             delete processMessage;
         }
     }

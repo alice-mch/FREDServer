@@ -161,10 +161,9 @@ void ProcessMessage::checkForOutput(string &line)
 
 void ProcessMessage::parseInputVariables(string& line, vector<string>& inVars, int32_t iteration)
 {
-    if (input[iteration].size() < inVars.size())
+    if (input[iteration].size() != inVars.size())
     {
-        PrintWarning("Number of arguments doesn't correspond with the config file!");
-        input[iteration].resize(inVars.size(), 0);
+        throw runtime_error("invar-arguments-number");
     }
 
     size_t left, right;
