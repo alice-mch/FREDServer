@@ -1,9 +1,10 @@
 # FREDServer
 
 ## Version History
+* v1.8 - Adds optional '--log \<path\>' parameter to the command line for direct logging to file
 * v1.7.1 - Adds Topic names to relevant output lines (more informative)
 * v1.7 - Adds Error channel: _ERR service joins _REQ and _ANS
- - _ERR will publish errors from ALF as a string, _ANS will not be updated
+  - _ERR will publish errors from ALF as a string, _ANS will not be updated
 * v1.6 - Adds '--help', '--parser', and '--verbose' modes, minor bugfixes
   - '--parser' mode will process and validate your configs, then exit without running
 * v1.5 - Adds 'Mask' block for masking devices from Group commands
@@ -45,7 +46,7 @@ Look into the 'examples' directory. This contains some examples of the required 
 
 You have to be in the directory containing your configs, then:
 ```
-/path/to/bin/FREDServer [--help] [--parser] [--verbose]
+/path/to/bin/FREDServer [--help] [--log <path>] [--parser] [--verbose]
 ```
 ## Examples
 
