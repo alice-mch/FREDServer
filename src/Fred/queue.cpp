@@ -59,18 +59,8 @@ void Queue::clearQueue(Queue *queue)
             }
             catch (exception& e)
             {
-                string thrown = e.what();
-                string errorMessage;
-                if (thrown == "invar-arguments-number")
-                {
-                    errorMessage = "Number of arguments doesn't correspond with the config file!";
-                    PrintError(request.second->name, errorMessage);
-                }
-                else
-                {
-                    errorMessage = "Error occured during parsing of the message!";
-                    PrintError(request.second->name, errorMessage);
-                }
+                string errorMessage = e.what();
+                PrintError(request.second->name, errorMessage);
 
                 request.second->error->Update(errorMessage.c_str());
                 PrintError(request.second->name, "Updating error service!");

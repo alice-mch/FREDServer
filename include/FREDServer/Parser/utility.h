@@ -19,10 +19,9 @@ public:
     static void printVector(const vector<string>& data);
     static void printVector(const vector<int32_t>& data);
     static double calculateEquation(string& equation, vector<string>& variables, vector<uint32_t>& values);
-    static string readbackToString(vector<vector<uint32_t> > data, int32_t multiplicity);
     static string readbackToString(vector<double> data);
-    static vector<uint32_t> splitAlfResponse(const string &message, Instructions::Type type);
-    static bool checkMessageIntegrity(const string& request, const string& response, Instructions::Type type);
+    static vector<unsigned long> splitAlfResponse(const string &message, Instructions::Type type);
+    static void checkMessageIntegrity(const string& request, const string& response, Instructions::Type type);
 
 private:
     Utility();
