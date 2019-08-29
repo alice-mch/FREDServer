@@ -56,11 +56,15 @@ AlfClients::Nodes AlfClients::createAlfInfo(string id, int32_t serial, int32_t l
     this->fred->RegisterRpcInfo(nodes.sca);
     nodes.swt = new AlfRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/SWT_SEQUENCE", " ", this->fred);
     this->fred->RegisterRpcInfo(nodes.swt);
+    nodes.ic = new AlfRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/IC_SEQUENCE", " ", this->fred);
+    this->fred->RegisterRpcInfo(nodes.ic);
 
     this->fred->RegisterRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_SCA_SEQUENCE_START", " ",  DIM_TYPE::STRING);
     this->fred->RegisterRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_SCA_SEQUENCE_STOP", " ", DIM_TYPE::STRING);
     this->fred->RegisterRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_SWT_SEQUENCE_START", " ", DIM_TYPE::STRING);
     this->fred->RegisterRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_SWT_SEQUENCE_STOP", " ", DIM_TYPE::STRING);
+    this->fred->RegisterRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_IC_SEQUENCE_START", " ", DIM_TYPE::STRING);
+    this->fred->RegisterRpcInfo("ALF_" + id + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_IC_SEQUENCE_STOP", " ", DIM_TYPE::STRING);
     return nodes;
 }
 
@@ -74,6 +78,8 @@ AlfRpcInfo* AlfClients::getAlfNode(string alf, int32_t serial, int32_t link, Ins
             return nodes.sca;
         case Instructions::Type::SWT:
             return nodes.swt;
+        case Instructions::Type::IC:
+            return nodes.ic;
     }
 
     return NULL;
@@ -88,6 +94,9 @@ RpcInfoString* AlfClients::getAlfNode(string alf, int32_t serial, int32_t link, 
 
         case Instructions::Type::SWT:
             return (RpcInfoString*)this->fred->GetRpcInfo("ALF_" + alf + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + (start ? "/PUBLISH_SWT_SEQUENCE_START" : "/PUBLISH_SWT_SEQUENCE_STOP"));
+      
+        case Instructions::Type::IC:
+            return (RpcInfoString*)this->fred->GetRpcInfo("ALF_" + alf + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + (start ? "/PUBLISH_IC_SEQUENCE_START" : "/PUBLISH_IC_SEQUENCE_STOP"));
     }
 
     return NULL;
@@ -111,6 +120,8 @@ string AlfClients::getAlfSubscribeTopic(string alf, int32_t serial, int32_t link
             return "ALF_" + alf + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_SCA_SEQUENCE/" + name;
         case Instructions::Type::SWT:
             return "ALF_" + alf + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_SWT_SEQUENCE/" + name;
+        case Instructions::Type::IC:
+            return "ALF_" + alf + "/SERIAL_" + to_string(serial) + "/LINK_" + to_string(link) + "/PUBLISH_IC_SEQUENCE/" + name;
     }
 
     return "";

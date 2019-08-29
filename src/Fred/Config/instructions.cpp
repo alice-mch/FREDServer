@@ -65,6 +65,10 @@ vector<string> Instructions::processConfigFile(string file)
                     {
                         instruction.type = Type::SCA;
                     }
+                    else if (right == "IC")
+                    {
+                        instruction.type = Type::IC;
+                    }
                     else
                     {
                         PrintError(this->path + " has invalid type name " + right + " in topic " + name);

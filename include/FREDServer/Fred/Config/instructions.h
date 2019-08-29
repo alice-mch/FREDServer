@@ -15,7 +15,8 @@ public:
     enum Type
     {
         SCA,
-        SWT
+        SWT,
+        IC
     };
 
     struct Instruction

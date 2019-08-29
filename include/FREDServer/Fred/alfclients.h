@@ -20,7 +20,7 @@ class AlfClients
 public:
     struct Nodes
     {
-        AlfRpcInfo *sca, *swt;
+        AlfRpcInfo *sca, *swt, *ic;
     };
 
 private:
