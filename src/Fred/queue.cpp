@@ -71,8 +71,8 @@ void Queue::clearQueue(Queue *queue)
 
             char* buffer;
 
-            if (!request.second->instruction->subscribe || request.second->mapi != NULL) //if MAPI or not subscribe topic
-            {
+            //if (!request.second->instruction->subscribe || request.second->mapi != NULL) //if MAPI or not subscribe topic
+            //{
                 if (noRpcRequest)
                 {
                     PrintVerbose(request.second->name, "Skipping RPC request");
@@ -86,29 +86,29 @@ void Queue::clearQueue(Queue *queue)
                     PrintVerbose(request.second->name, "Sending RPC request:\n" + string(buffer));
                     request.second->alfLink->Send(buffer);
                 }
-            }
-            else
-            {
-                Mapping::Unit* unit = request.second->unit;
-                if (request.second->interval > 0.0)
-                {
-                    RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, true);
-                    fullMessage = request.second->name + "\n" + to_string(request.second->interval) + "\n" + fullMessage;
-                    buffer = strdup(fullMessage.c_str());
-                    PrintVerbose(request.second->name, "Sending RPC subscribe request:\n" + string(buffer));
-                    request.second->alfInfo->setTransaction(request);
-                    rpcInfo->Send(buffer);
-                }
-                else
-                {
-                    RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, false);
-                    fullMessage = request.second->name;
-                    buffer = strdup(fullMessage.c_str());
-                    PrintVerbose(request.second->name, "Sending RPC unsubscribe request:\n");
-                    request.second->alfInfo->clearTransaction();
-                    rpcInfo->Send(buffer);
-                }
-            }
+            //}
+            //else
+            //{
+            //    Mapping::Unit* unit = request.second->unit;
+            //    if (request.second->interval > 0.0)
+            //    {
+            //        RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, true);
+            //        fullMessage = request.second->name + "\n" + to_string(request.second->interval) + "\n" + fullMessage;
+            //        buffer = strdup(fullMessage.c_str());
+            //        PrintVerbose(request.second->name, "Sending RPC subscribe request:\n" + string(buffer));
+            //        request.second->alfInfo->setTransaction(request);
+            //        rpcInfo->Send(buffer);
+            //    }
+            //    else
+            //    {
+            //        RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, false);
+            //        fullMessage = request.second->name;
+            //        buffer = strdup(fullMessage.c_str());
+            //        PrintVerbose(request.second->name, "Sending RPC unsubscribe request:\n");
+            //        request.second->alfInfo->clearTransaction();
+            //        rpcInfo->Send(buffer);
+            //    }
+            //}
 
             free(buffer);
 

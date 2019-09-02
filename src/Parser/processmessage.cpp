@@ -239,8 +239,8 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
 {
     try
     {
-        if (!ignoreStatus) //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only
-        {
+        //if (!ignoreStatus) //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only
+        //{
             if (!(message.find(SUCCESS) != string::npos)) //not a SUCCESS
             {
                 string response;
@@ -329,53 +329,53 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
 
                 return;
             }
-        }
-        else //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only 
-        {
-            string response;
-            vector<vector<unsigned long> > values;
-            try
-            {
-                values = readbackValues(message.substr(SUCCESS.length() + 1), *chainTopic.instruction);
-            }
-            catch (exception& e)
-            {
-                PrintError(chainTopic.name, e.what());
-                response = e.what();
-                replace(message.begin(), message.end(), '\n', ';');
-                response += ";" + message;
-                if (groupCommand == NULL)
-                {
-                    chainTopic.error->Update(response.c_str());
-                    PrintError(chainTopic.name, "Updating error service!");
-                }
-                else groupCommand->receivedResponse(&chainTopic, response, true);
+        //}
+        //else //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only 
+        //{
+        //    string response;
+        //    vector<vector<unsigned long> > values;
+        //    try
+        //    {
+        //        values = readbackValues(message.substr(SUCCESS.length() + 1), *chainTopic.instruction);
+        //    }
+        //    catch (exception& e)
+        //    {
+        //        PrintError(chainTopic.name, e.what());
+        //        response = e.what();
+        //        replace(message.begin(), message.end(), '\n', ';');
+        //        response += ";" + message;
+        //        if (groupCommand == NULL)
+        //        {
+        //            chainTopic.error->Update(response.c_str());
+        //            PrintError(chainTopic.name, "Updating error service!");
+        //        }
+        //        else groupCommand->receivedResponse(&chainTopic, response, true);
                 
-                return;
-            }
+        //        return;
+        //    }
 
-            if (values.empty())
-            {
-                response = "OK"; //FRED ACK response  
-                chainTopic.service->Update(response.c_str());
+        //    if (values.empty())
+        //    {
+        //        response = "OK"; //FRED ACK response  
+        //        chainTopic.service->Update(response.c_str());
 
-                return;
-            }
+        //        return;
+        //    }
 
-            if (chainTopic.instruction->equation != "")
-            {
-                vector<double> realValues = calculateReadbackResult(values, *chainTopic.instruction);
-                response = Utility::readbackToString(realValues);
-            }
-            else
-            {
-                response = valuesToString(values, getMultiplicity(), chainTopic.instruction->type);
-            }
+        //    if (chainTopic.instruction->equation != "")
+        //    {
+        //        vector<double> realValues = calculateReadbackResult(values, *chainTopic.instruction);
+        //        response = Utility::readbackToString(realValues);
+        //    }
+        //    else
+        //    {
+        //        response = valuesToString(values, getMultiplicity(), chainTopic.instruction->type);
+        //    }
 
-            chainTopic.service->Update(response.c_str());
-            
-            return;
-        }
+        //    chainTopic.service->Update(response.c_str());
+  
+        //    return;
+        //}
     }
     catch (exception& e)
     {

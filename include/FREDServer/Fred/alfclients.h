@@ -37,7 +37,7 @@ public:
     Nodes createAlfInfo(string id, int32_t serial, int32_t link);
 
     AlfRpcInfo* getAlfNode(string alf, int32_t serial, int32_t link, Instructions::Type type);
-    RpcInfoString *getAlfNode(string alf, int32_t serial, int32_t link, Instructions::Type type, bool start);
+    //RpcInfoString *getAlfNode(string alf, int32_t serial, int32_t link, Instructions::Type type, bool start);
     Queue* getAlfQueue(string alf);
     //string getAlfDns(string alf);
     string getAlfSubscribeTopic(string alf, int32_t serial, int32_t link, Instructions::Type type, string name);

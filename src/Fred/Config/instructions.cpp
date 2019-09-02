@@ -45,7 +45,7 @@ vector<string> Instructions::processConfigFile(string file)
             }
 
             Instruction instruction;
-            instruction.subscribe = false;
+            //instruction.subscribe = false;
             instruction.name = name;
 
             topics.push_back(name);
@@ -75,10 +75,10 @@ vector<string> Instructions::processConfigFile(string file)
                         throw runtime_error("TYPE");
                     }
                 }
-                else if (left == "SUBSCRIBE")
-                {
-                    instruction.subscribe = right == "TRUE" ? true : false;
-                }
+                //else if (left == "SUBSCRIBE")
+                //{
+                //    instruction.subscribe = right == "TRUE" ? true : false;
+                //}
                 else if (left == "EQUATION")
                 {
                     instruction.equation = right;

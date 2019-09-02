@@ -25,7 +25,7 @@ public:
         Type type;
         string equation;
         vector<string> inVar, outVar, message;
-        bool subscribe;
+        //bool subscribe;
     };
 
     map<string, Instruction>& getInstructions();
