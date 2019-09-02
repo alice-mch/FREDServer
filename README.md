@@ -1,6 +1,9 @@
 # FREDServer
 
 ## Version History
+* v2.0 - Moves compatibility to O2 ALF (from 'alisw-el7' repository/flp-suite Ansible install) - N.B. NOT backwards compatible
+  - Existing 'section' files must be modified to reflect new ALF DIM server name (from ALFID to ALF_HOSTNAME)
+  - Existing SWT MAPI implementations must be modified to reflect the new protocol (see: [ALF Readme on GitHub](https://github.com/AliceO2Group/ALF/blob/master/README.md))
 * v1.9 - Extends MAPI capabilities, including iterative requests to ALF (Iterativemapi), and custom grouping of topics (Mapigroup)
   - New booleans: 
     - 'noReturn' (do not publish to WinCC)
