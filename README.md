@@ -1,6 +1,16 @@
 # FREDServer
 
 ## Version History
+* v1.9 - Extends MAPI capabilities, including iterative requests to ALF (Iterativemapi), and custom grouping of topics (Mapigroup)
+  - New booleans: 
+    - 'noReturn' (do not publish to WinCC)
+    - 'noRpcRequest' (do not send request to ALF)
+    - 'returnError' (publish via _ERR instead of _ANS)
+  - New functions: 
+    - 'newRequest(string)' (call this MAPI's 'processInputMessage()')
+    - 'publishAnswer(string)' & 'publishError(string)' (publish string to _ANS & _ERR for WinCC)
+    - 'newMapiGroupRequest(vector<topicname, input>)' (call these topics with their inputs)
+  - See READMEs and graphics in examples/Mapi for more details
 * v1.8 - Adds optional '--log \<path\>' parameter to the command line for direct logging to file
 * v1.7.1 - Adds Topic names to relevant output lines (more informative)
 * v1.7 - Adds Error channel: _ERR service joins _REQ and _ANS
