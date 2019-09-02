@@ -39,6 +39,7 @@ public:
     void evaluateMessage(string message, ChainTopic& chainTopic, bool ignoreStatus = false);
     string generateMapiMessage();
     void evaluateMapiMessage(string message, ChainTopic& chainTopic);
+    void checkMessageIntegrity(const string& request, const string& response, Instructions::Type type);
     string generateFullMessage(Instructions::Instruction& instructions);
     string valuesToString(vector<vector<unsigned long> > values, int32_t multiplicity, Instructions::Type type);
 };

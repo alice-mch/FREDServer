@@ -8,10 +8,6 @@
 #include "Parser/utility.h"
 #include "Parser/calculator.h"
 #include "Alfred/print.h"
-#include "Parser/processmessage.h"
-#include "Fred/Protocols/SCA.h"
-#include "Fred/Protocols/SWT.h"
-#include "Fred/Protocols/IC.h"
 
 vector<uint32_t> Utility::splitString2Num(const string &text, string by)
 {
@@ -178,26 +174,6 @@ vector<unsigned long> Utility::splitAlfResponse(const string& message, Instructi
     }
 
     return result;
-}
-
-void Utility::checkMessageIntegrity(const string& request, const string& response, Instructions::Type type)
-{
-    try
-    {
-        switch (type)
-        {
-            case Instructions::Type::SWT: SWT::checkIntegrity(request, response);
-                break;
-            case Instructions::Type::SCA: SCA::checkIntegrity(request, response);
-                break;
-            case Instructions::Type::IC: IC::checkIntegrity(request, response);
-                break;
-        }
-    }
-    catch (exception& e)
-    {
-        throw runtime_error(e.what());
-    }
 }
 
 Utility::Utility()

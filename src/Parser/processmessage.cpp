@@ -151,6 +151,26 @@ string ProcessMessage::generateFullMessage(Instructions::Instruction& instructio
     return fullMessage;
 }
 
+void ProcessMessage::checkMessageIntegrity(const string& request, const string& response, Instructions::Type type)
+{
+    try
+    {
+        switch (type)
+        {
+            case Instructions::Type::SWT: SWT::checkIntegrity(request, response);
+                break;
+            case Instructions::Type::SCA: SCA::checkIntegrity(request, response);
+                break;
+            case Instructions::Type::IC: IC::checkIntegrity(request, response);
+                break;
+        }
+    }
+    catch (exception& e)
+    {
+        throw runtime_error(e.what());
+    }
+}
+
 void ProcessMessage::parseInputVariables(string& line, vector<string>& inVars, int32_t iteration)
 {
     if (input[iteration].size() != inVars.size())
@@ -278,7 +298,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                 vector<vector<unsigned long> > values;
                 try
                 {
-                    Utility::checkMessageIntegrity(this->fullMessage, message.substr(SUCCESS.length() + 1), chainTopic.instruction->type); //check message integrity
+                    checkMessageIntegrity(this->fullMessage, message.substr(SUCCESS.length() + 1), chainTopic.instruction->type); //check message integrity
                     values = readbackValues(message.substr(SUCCESS.length() + 1), *chainTopic.instruction); //extract eventual outvars
                 }
                 catch (exception& e)
