@@ -32,7 +32,7 @@ void Mapping::processUnit(string& left, string& right)
     vector<string> path = Utility::splitString(right, "/");
     if (path.size() == 3)
     {
-        unit.alfId = stoi(path[0].substr(3)); //ALFx
+        unit.alfId = path[0].substr(4); //ALF_x
         unit.serialId = stoi(path[1].substr(7)); //SERIAL_x
         unit.linkId = stoi(path[2].substr(5)); //LINK_x
 
@@ -42,7 +42,7 @@ void Mapping::processUnit(string& left, string& right)
     }
 }
 
-void Mapping::processLocation(int32_t alfId, int32_t serialId, int32_t linkId)
+void Mapping::processLocation(string alfId, int32_t serialId, int32_t linkId)
 {
     if (!alfs.count(alfId)) //new ALF
     {
@@ -78,7 +78,7 @@ vector<Mapping::Unit>& Mapping::getUnits()
     return units;
 }
 
-map<int32_t, Location::AlfEntry>& Mapping::alfList()
+map<string, Location::AlfEntry>& Mapping::alfList()
 {
     return alfs;
 }

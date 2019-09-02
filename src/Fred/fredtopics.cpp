@@ -33,16 +33,16 @@ void FredTopics::registerUnit(string section, Mapping::Unit& unit, Instructions 
             topics[fullName].interval = 0.0;
             topics[fullName].mapi = NULL;
 
-            if (topics[fullName].instruction->subscribe)
-            {
-                topics[fullName].command = new SubscribeCommand(fullName + "_REQ", this->fred, &topics[fullName], uId);
-                topics[fullName].alfInfo = new AlfInfo(this->fred->getAlfClients().getAlfSubscribeTopic(unit.alfId, unit.serialId, unit.linkId, topics[fullName].instruction->type, fullName), this->fred);
-            }
-            else
-            {
+            //if (topics[fullName].instruction->subscribe)
+            //{
+            //    topics[fullName].command = new SubscribeCommand(fullName + "_REQ", this->fred, &topics[fullName], uId);
+            //    topics[fullName].alfInfo = new AlfInfo(this->fred->getAlfClients().getAlfSubscribeTopic(unit.alfId, unit.serialId, unit.linkId, topics[fullName].instruction->type, fullName), this->fred);
+            //}
+            //else
+            //{
                 topics[fullName].command =  new MappedCommand(fullName + "_REQ", this->fred, &topics[fullName], uId);
                 topics[fullName].alfInfo = NULL;
-            }
+            //}
 
             this->fred->RegisterCommand(topics[fullName].command);
 

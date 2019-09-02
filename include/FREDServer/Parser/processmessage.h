@@ -25,24 +25,22 @@ private:
     Mapi* mapi;
 
     bool checkMessage(string& message);
-    void checkForOutput(string& line);
-    void parseInputVariables(string& line, vector<string>& inVars, int32_t iteration);
 
 public:
+    void parseInputVariables(string& line, vector<string>& inVars, int32_t iteration);
+
     ProcessMessage(string message, int32_t placeId);
     ProcessMessage(map<string, vector<uint32_t> > inVars, int32_t placeId, GroupCommand* groupCommand);
     ProcessMessage(Mapi* mapi, string input);
     int32_t getMultiplicity();
     bool isCorrect();
-
-    string &generateFullMessage(Instructions::Instruction& instructions);
-
-    vector<vector<uint32_t> > readbackValues(const string &message, Instructions::Instruction& instructions);
-    vector<double> calculateReadbackResult(vector<vector<uint32_t> >& result, Instructions::Instruction& instructions);
+    vector<vector<unsigned long> > readbackValues(const string &message, Instructions::Instruction& instructions);
+    vector<double> calculateReadbackResult(vector<vector<unsigned long> >& result, Instructions::Instruction& instructions);
     void evaluateMessage(string message, ChainTopic& chainTopic, bool ignoreStatus = false);
-
     string generateMapiMessage();
     void evaluateMapiMessage(string message, ChainTopic& chainTopic);
+    string generateFullMessage(Instructions::Instruction& instructions);
+    string valuesToString(vector<vector<unsigned long> > values, int32_t multiplicity, Instructions::Type type);
 };
 
 #endif // PROCESSMESSAGE_H

@@ -1,11 +1,17 @@
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <cctype>
 #include <algorithm>
+#include <climits>
 #include "Parser/utility.h"
 #include "Parser/calculator.h"
 #include "Alfred/print.h"
+#include "Parser/processmessage.h"
+#include "Fred/Protocols/SCA.h"
+#include "Fred/Protocols/SWT.h"
+#include "Fred/Protocols/IC.h"
 
 vector<uint32_t> Utility::splitString2Num(const string &text, string by)
 {
@@ -129,24 +135,6 @@ double Utility::calculateEquation(string& equation, vector<string>& variables, v
     return 0;
 }
 
-string Utility::readbackToString(vector<vector<uint32_t> > data, int32_t multiplicity)
-{
-    stringstream result;
-
-    for (int32_t m = 0; m < multiplicity; m++)
-    {
-        for (size_t v = 0; v < data.size(); v++)
-        {
-            result << "0x" << hex << data[v][m];
-            if (v < data.size() - 1) result << ",";
-        }
-
-        if (m < multiplicity - 1) result << "\n";
-    }
-
-    return result.str();
-}
-
 string Utility::readbackToString(vector<double> data)
 {
     string result;
@@ -160,10 +148,10 @@ string Utility::readbackToString(vector<double> data)
     return result;
 }
 
-vector<uint32_t> Utility::splitAlfResponse(const string& message, Instructions::Type type)
+vector<unsigned long> Utility::splitAlfResponse(const string& message, Instructions::Type type)
 {
     vector<string> splitted = splitString(message, "\n");
-    vector<uint32_t> result;
+    vector<unsigned long> result;
 
     for (size_t i = 0; i < splitted.size(); i++)
     {
@@ -172,60 +160,44 @@ vector<uint32_t> Utility::splitAlfResponse(const string& message, Instructions::
             size_t pos = splitted[i].find(",");
             if (pos != string::npos)
             {
-                result.push_back(stoul(splitted[i].substr(pos + 1), NULL, 16));
+                result.push_back(stoul(splitted[i].substr(pos + 1), NULL, 16)); //return the 32 bits payload
             }
         }
         else if (type == Instructions::Type::SWT)
         {
-            result.push_back(stoul(splitted[i].size() > 4 ? splitted[i].substr(splitted[i].size() - 4) : splitted[i], NULL, 16));
+            result.push_back(stoul(splitted[i].size() > 4 ? splitted[i].substr(splitted[i].size() - 4) : splitted[i], NULL, 16)); //return last 16 bits
+        }
+        else if (type == Instructions::Type::IC)
+        {
+            size_t pos = splitted[i].find(",");
+            if (pos != string::npos)
+            {
+                result.push_back(stoul(splitted[i].substr(pos + 1), NULL, 16)); //return the 32 bits payload
+            }
         }
     }
 
     return result;
 }
 
-bool Utility::checkMessageIntegrity(const string& request, const string& response, Instructions::Type type)
+void Utility::checkMessageIntegrity(const string& request, const string& response, Instructions::Type type)
 {
-    vector<string> reqVec = splitString(request, "\n");
-    vector<string> resVec = splitString(response, "\n");
-
-    if (reqVec.size() != resVec.size())
-    {
-        throw runtime_error("Invalid number of lines received!"); 
-    }
-
     try
     {
-        for (size_t i = 0; i < reqVec.size(); i++)
+        switch (type)
         {
-            transform(reqVec[i].begin(), reqVec[i].end(), reqVec[i].begin(), ::tolower);
-            transform(resVec[i].begin(), resVec[i].end(), resVec[i].begin(), ::tolower);
-
-            if (type == Instructions::Type::SCA)
-            {
-                size_t nonZeroPos = reqVec[i].find_first_not_of('0');
-                size_t commaPos = reqVec[i].find(",");
-                if (reqVec[i].substr(nonZeroPos, commaPos-nonZeroPos) != resVec[i].substr(0, resVec[i].find(",")))
-                {
-                    return false;
-                }
-            }
-            else if (type == Instructions::Type::SWT)
-            {
-                if (resVec[i] == "0") continue;
-                if (reqVec[i].substr(reqVec[i].size() - 8, 4) != resVec[i].substr(resVec[i].size() - 8, 4))
-                {
-                    return false;
-                }
-            }
+            case Instructions::Type::SWT: SWT::checkIntegrity(request, response);
+                break;
+            case Instructions::Type::SCA: SCA::checkIntegrity(request, response);
+                break;
+            case Instructions::Type::IC: IC::checkIntegrity(request, response);
+                break;
         }
     }
     catch (exception& e)
     {
-        throw runtime_error("Integrity check of received message failed!"); 
+        throw runtime_error(e.what());
     }
-
-    return true;
 }
 
 Utility::Utility()

@@ -48,6 +48,9 @@ file(GLOB SOURCES "src/main.cpp"
                 "src/Fred/Mapi/iterativemapi.cpp"
                 "src/Fred/Mapi/mapigroup.cpp"
                 "src/Mapi/*.cpp"
+                "src/Fred/Protocols/SCA.cpp"
+                "src/Fred/Protocols/SWT.cpp"
+                "src/Fred/Protocols/IC.cpp"
 	)
 
 add_executable(FREDServer ${SOURCES})

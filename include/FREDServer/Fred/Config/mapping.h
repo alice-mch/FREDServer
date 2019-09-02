@@ -16,19 +16,20 @@ public:
         string unitName;
         vector<int32_t> unitIds;
 
-        int32_t alfId, serialId, linkId;
+        string alfId;
+        int32_t serialId, linkId;
     };
 
     Mapping(vector<string> data = vector<string>());
     vector<Unit>& getUnits();
 
-    map<int32_t, AlfEntry>& alfList();
+    map<string, AlfEntry>& alfList();
 
 private:
     vector<Unit> units;
 
     void processUnit(string& left, string& right);
-    void processLocation(int32_t alfId, int32_t serialId, int32_t linkId);
+    void processLocation(string alfId, int32_t serialId, int32_t linkId);
 };
 
 #endif // MAPPING_H

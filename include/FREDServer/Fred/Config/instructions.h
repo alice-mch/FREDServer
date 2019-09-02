@@ -15,7 +15,8 @@ public:
     enum Type
     {
         SCA,
-        SWT
+        SWT,
+        IC
     };
 
     struct Instruction
@@ -24,7 +25,7 @@ public:
         Type type;
         string equation;
         vector<string> inVar, outVar, message;
-        bool subscribe;
+        //bool subscribe;
     };
 
     map<string, Instruction>& getInstructions();
