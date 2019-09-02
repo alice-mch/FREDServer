@@ -85,9 +85,9 @@ void FredTopics::registerGroup(string section, Groups::Group& group)
     groupTopics[fullName].unitIds = group.unitIds;
 }
 
-void FredTopics::registerMapiObject(string topic, MapiInterface* mapi)
+void FredTopics::registerMapiObject(string topic, Mapi* mapi)
 {
-    map<string, ChainTopic>::iterator it = topics.find(topic);
+    auto it = topics.find(topic);
     if (it == topics.end())
     {
         PrintError("Requested MAPI topic " + topic + " is not a registered topic!");
@@ -98,4 +98,12 @@ void FredTopics::registerMapiObject(string topic, MapiInterface* mapi)
         topics[topic].mapi = mapi;
         PrintVerbose("Mapi object registered to " + topic);
     }
+}
+
+/*
+ * To give MAPI access to the list (map) of topics
+ */
+map<string, ChainTopic>& FredTopics::getTopicsMap()
+{
+    return topics;
 }

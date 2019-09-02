@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 #include "Fred/Config/instructions.h"
-#include "Fred/mapiinterface.h"
+#include "Fred/Mapi/mapi.h"
+#include "Fred/Mapi/iterativemapi.h"
+#include "Fred/Mapi/mapigroup.h"
 
 using namespace std;
 
@@ -20,7 +22,7 @@ private:
     static const string SUCCESS, FAILURE;
     string fullMessage;
     GroupCommand* groupCommand;
-    MapiInterface* mapi;
+    Mapi* mapi;
 
     bool checkMessage(string& message);
     void checkForOutput(string& line);
@@ -29,7 +31,7 @@ private:
 public:
     ProcessMessage(string message, int32_t placeId);
     ProcessMessage(map<string, vector<uint32_t> > inVars, int32_t placeId, GroupCommand* groupCommand);
-    ProcessMessage(MapiInterface* mapi, string input);
+    ProcessMessage(Mapi* mapi, string input);
     int32_t getMultiplicity();
     bool isCorrect();
 

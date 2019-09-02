@@ -43,6 +43,7 @@ void Queue::clearQueue(Queue *queue)
             PrintVerbose(request.second->name, "Parsing message");
 
             string fullMessage;
+            bool noRpcRequest = false; //if true, the RPC request is not sent
 
             try
             {
@@ -53,6 +54,7 @@ void Queue::clearQueue(Queue *queue)
                 else
                 {
                     fullMessage = request.first->generateMapiMessage();
+                    noRpcRequest = request.second->mapi->noRpcRequest;
                 }
             }
             catch (exception& e)
@@ -79,11 +81,21 @@ void Queue::clearQueue(Queue *queue)
 
             char* buffer;
 
-            if (!request.second->instruction->subscribe || request.second->mapi != NULL)
+            if (!request.second->instruction->subscribe || request.second->mapi != NULL) //if MAPI or not subscribe topic
             {
-                buffer = strdup(fullMessage.c_str());
-                PrintVerbose(request.second->name, "Sending RPC request:\n" + string(buffer));
-                request.second->alfLink->Send(buffer);
+                if (noRpcRequest)
+                {
+                    PrintVerbose(request.second->name, "Skipping RPC request");
+                    noRpcRequest = false; //reset noRpcRequest 
+                    fullMessage = "not empty string";
+                    buffer = strdup(fullMessage.c_str());
+                }
+                else
+                {
+                    buffer = strdup(fullMessage.c_str());
+                    PrintVerbose(request.second->name, "Sending RPC request:\n" + string(buffer));
+                    request.second->alfLink->Send(buffer);
+                }
             }
             else
             {
@@ -109,7 +121,6 @@ void Queue::clearQueue(Queue *queue)
             }
 
             free(buffer);
-
 
             queue->isProcessing = false;
         }

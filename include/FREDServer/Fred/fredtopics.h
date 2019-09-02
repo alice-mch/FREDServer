@@ -10,7 +10,9 @@
 #include "Fred/Config/instructions.h"
 #include "Fred/Config/groups.h"
 #include "Alfred/service.h"
-#include "Fred/mapiinterface.h"
+#include "Fred/Mapi/mapi.h"
+#include "Fred/Mapi/iterativemapi.h"
+#include "Fred/Mapi/mapigroup.h"
 
 class Fred;
 class AlfRpcInfo;
@@ -33,7 +35,7 @@ struct ChainTopic
     AlfInfo* alfInfo;
     float interval;
 
-    MapiInterface* mapi;
+    Mapi* mapi;
 };
 
 struct GroupTopic
@@ -54,7 +56,8 @@ public:
     FredTopics(Fred* fred);
     void registerUnit(string section, Mapping::Unit& unit, Instructions& instructions);
     void registerGroup(string section, Groups::Group& group);
-    void registerMapiObject(string topic, MapiInterface* mapi);
+    void registerMapiObject(string topic, Mapi* mapi);
+    map<string, ChainTopic> &getTopicsMap();
 
 private:
     Fred* fred;

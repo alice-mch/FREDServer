@@ -6,6 +6,9 @@
 #include "Fred/Config/mapping.h"
 #include "Fred/cruregistercommand.h"
 #include "Fred/fredMode.h"
+#include "Fred/Mapi/mapi.h"
+#include "Fred/Mapi/iterativemapi.h"
+#include "Fred/Mapi/mapigroup.h"
 
 Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRED(fredName, dnsName), alfClients(this), fredTopics(this)
 {
@@ -129,7 +132,9 @@ string Fred::getFredDns()
     return fredDns;
 }
 
-void Fred::registerMapiObject(string topic, MapiInterface* mapi)
+void Fred::registerMapiObject(string topic, Mapi* mapi)
 {
+    mapi->getFred(this);
+    mapi->getName(topic);
     fredTopics.registerMapiObject(topic, mapi);
 }

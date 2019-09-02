@@ -1,0 +1,10 @@
+ITERATIVEBOARDS = {
+    INSTRUCTIONS = {
+        PATH = ../boards/iterativemapi/iterativemapi.conf
+    }
+
+    MAPPING = {
+       ITERATIVEBOARD[0] = ALF75/SERIAL_0/LINK_3
+    }
+}
+
