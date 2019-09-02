@@ -235,13 +235,86 @@ string ProcessMessage::valuesToString(vector<vector<unsigned long> > values, int
     return response;
 }
 
+/*
+ * Update _ANS or _ERR response channel
+ */
+void ProcessMessage::updateResponse(ChainTopic& chainTopic, string response, bool error)
+{
+    if (error)
+    {
+        if (groupCommand == NULL)
+        {
+            chainTopic.error->Update(response.c_str());
+            PrintError(chainTopic.name, "Updating error service!");
+        }
+        else groupCommand->receivedResponse(&chainTopic, response, true);
+    }
+    else
+    {
+        if (groupCommand == NULL)
+        {
+            chainTopic.service->Update(response.c_str());
+            PrintVerbose(chainTopic.name, "Updating service");
+        }
+        else groupCommand->receivedResponse(&chainTopic, response, false);        
+    }
+}
+
 void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, bool ignoreStatus)
 {
     try
     {
         //if (!ignoreStatus) //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only
         //{
-            if (!(message.find(SUCCESS) != string::npos)) //not a SUCCESS
+            string response;
+            if (message == "NO RPC LINK!")
+            {
+                response = "ALF_" + chainTopic.unit->alfId + " is not responding!";
+                PrintError(chainTopic.name, response);
+                
+                updateResponse(chainTopic, response, true);
+                return;
+            }
+            else if (message.find(SUCCESS) != string::npos) //SUCCESS
+            {
+                vector<vector<unsigned long> > values;
+                try
+                {
+                    Utility::checkMessageIntegrity(this->fullMessage, message.substr(SUCCESS.length() + 1), chainTopic.instruction->type); //check message integrity
+                    values = readbackValues(message.substr(SUCCESS.length() + 1), *chainTopic.instruction); //extract eventual outvars
+                }
+                catch (exception& e)
+                {
+                    PrintError(chainTopic.name, e.what());
+                    response = e.what();
+                    replace(message.begin(), message.end(), '\n', ';');
+                    response += ";" + message;
+
+                    updateResponse(chainTopic, response, true);
+                    return;
+                }
+                if (values.empty())
+                {
+                    response = "OK"; //FRED ACK response
+
+                    updateResponse(chainTopic, response, false);
+                    return;
+                }
+
+                if (chainTopic.instruction->equation != "")
+                {
+                    vector<double> realValues = calculateReadbackResult(values, *chainTopic.instruction);
+                    response = Utility::readbackToString(realValues);
+                }
+                else
+                {
+                    response = valuesToString(values, getMultiplicity(), chainTopic.instruction->type);
+                }
+
+                updateResponse(chainTopic, response, false);
+                return;
+            }
+            else if (!(message.find(SUCCESS) != string::npos)) //not a SUCCESS
             {
                 string response;
 
@@ -263,70 +336,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                     response = message;
                 }
                 
-                if (groupCommand == NULL)
-                {
-                    chainTopic.error->Update(response.c_str());
-                    PrintError(chainTopic.name, "Updating error service!");
-                }
-                else groupCommand->receivedResponse(&chainTopic, response, true);
-
-                return;
-            }
-            else if (message.find(SUCCESS) != string::npos) //SUCCESS
-            {
-                string response;
-                vector<vector<unsigned long> > values;
-                try
-                {
-                    Utility::checkMessageIntegrity(this->fullMessage, message.substr(SUCCESS.length() + 1), chainTopic.instruction->type); //check message integrity
-                    values = readbackValues(message.substr(SUCCESS.length() + 1), *chainTopic.instruction); //extract eventual outvars
-                }
-                catch (exception& e)
-                {
-                    PrintError(chainTopic.name, e.what());
-                    response = e.what();
-                    replace(message.begin(), message.end(), '\n', ';');
-                    response += ";" + message;
-                    if (groupCommand == NULL)
-                    {
-                        chainTopic.error->Update(response.c_str());
-                        PrintError(chainTopic.name, "Updating error service!");
-                    }
-                    else groupCommand->receivedResponse(&chainTopic, response, true);
-                    
-                    return;
-                }
-                if (values.empty())
-                {
-                    response = "OK"; //FRED ACK response
-
-                    if (groupCommand == NULL)
-                    {
-                        PrintVerbose(chainTopic.name, "Updating service");
-                        chainTopic.service->Update(response.c_str());
-                    }
-                    else groupCommand->receivedResponse(&chainTopic, response, false);
-
-                    return;
-                }
-
-                if (chainTopic.instruction->equation != "")
-                {
-                    vector<double> realValues = calculateReadbackResult(values, *chainTopic.instruction);
-                    response = Utility::readbackToString(realValues);
-                }
-                else
-                {
-                    response = valuesToString(values, getMultiplicity(), chainTopic.instruction->type);
-                }
-
-                if (groupCommand == NULL)
-                {
-                    PrintVerbose(chainTopic.name, "Updating service");
-                    chainTopic.service->Update(response.c_str());
-                }
-                else groupCommand->receivedResponse(&chainTopic, response, false);
-
+                updateResponse(chainTopic, response, true);
                 return;
             }
         //}
@@ -344,13 +354,8 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
         //        response = e.what();
         //        replace(message.begin(), message.end(), '\n', ';');
         //        response += ";" + message;
-        //        if (groupCommand == NULL)
-        //        {
-        //            chainTopic.error->Update(response.c_str());
-        //            PrintError(chainTopic.name, "Updating error service!");
-        //        }
-        //        else groupCommand->receivedResponse(&chainTopic, response, true);
-                
+
+        //        updateResponse(chainTopic, response, true);
         //        return;
         //    }
 
@@ -373,7 +378,6 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
         //    }
 
         //    chainTopic.service->Update(response.c_str());
-  
         //    return;
         //}
     }
@@ -381,13 +385,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
     {
         string response = "Error in message evaluation! Incorrect data received!";
         PrintError(chainTopic.name, response);
-
-        if (groupCommand == NULL)
-        {
-            chainTopic.error->Update(response.c_str());
-            PrintError(chainTopic.name, "Updating error service!");
-        }
-        else groupCommand->receivedResponse(&chainTopic, response, true);
+        updateResponse(chainTopic, response, true);
     }
 }
 

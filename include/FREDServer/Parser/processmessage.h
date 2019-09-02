@@ -41,6 +41,7 @@ public:
     void evaluateMapiMessage(string message, ChainTopic& chainTopic);
     string generateFullMessage(Instructions::Instruction& instructions);
     string valuesToString(vector<vector<unsigned long> > values, int32_t multiplicity, Instructions::Type type);
+    void updateResponse(ChainTopic& chainTopic, string response, bool error);
 };
 
 #endif // PROCESSMESSAGE_H
