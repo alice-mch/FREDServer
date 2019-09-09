@@ -99,7 +99,7 @@ void CruRegisterCommand::executeRead(vector<uint32_t>& message)
 
 string CruRegisterCommand::builAlfTopic(Type type, uint32_t alf, uint32_t serial)
 {
-    return "ALF" + to_string(alf) + "/SERIAL_" + to_string(serial) + "/LINK_0/REGISTER_" + (type == WRITE ? "WRITE" : "READ");
+    return "ALF" + to_string(alf) + "/SERIAL_" + to_string(serial) + "/REGISTER_" + (type == WRITE ? "WRITE" : "READ");
 }
 
 void CruRegisterCommand::clearRequests(CruRegisterCommand *self)

@@ -31,8 +31,8 @@ void AlfClients::registerAlf(Location::AlfEntry &entry)
         {
             clients[entry.id][serial->first] = map<int32_t, Nodes>();
 
-            this->fred->RegisterRpcInfo(new CruAlfRpcInfo("ALF_" + entry.id + "/SERIAL_" + to_string(serial->first) + "/LINK_0/REGISTER_WRITE", this->fred, CruAlfRpcInfo::WRITE));
-            this->fred->RegisterRpcInfo(new CruAlfRpcInfo("ALF_" + entry.id + "/SERIAL_" + to_string(serial->first) + "/LINK_0/REGISTER_READ", this->fred, CruAlfRpcInfo::READ));
+            this->fred->RegisterRpcInfo(new CruAlfRpcInfo("ALF_" + entry.id + "/SERIAL_" + to_string(serial->first) + "/REGISTER_WRITE", this->fred, CruAlfRpcInfo::WRITE));
+            this->fred->RegisterRpcInfo(new CruAlfRpcInfo("ALF_" + entry.id + "/SERIAL_" + to_string(serial->first) + "/REGISTER_READ", this->fred, CruAlfRpcInfo::READ));
         }
 
         for (size_t link = 0; link < serial->second.links.size(); link++)
