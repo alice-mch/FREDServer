@@ -4,7 +4,7 @@ RU_SCA = {
     }
 
     MAPPING = {
-       ITSRU[0] = ALF75/SERIAL_0/LINK_2
+       ITSRU[0] = ALF_FLP042/SERIAL_0/LINK_2
     }
 }
 

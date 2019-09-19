@@ -4,7 +4,7 @@ INNER_BARREL = {
     }
 
     MAPPING = {
-        STAVE[x,x,x,x,0] = ALF1/SERIAL_0/LINK_1
+        STAVE[x,x,x,x,0] = ALF_FLP001/SERIAL_0/LINK_1
     }
 
     GROUPS = {

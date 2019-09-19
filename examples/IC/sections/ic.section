@@ -1,0 +1,9 @@
+IC_SECTION = {
+    INSTRUCTIONS = {
+        PATH = ../boards/ic/ic.conf
+    }
+
+    MAPPING = {
+        BOARD[0,1,2,3] = ALF_FLP042/SERIAL_0/LINK_1
+    }
+}
