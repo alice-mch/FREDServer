@@ -1,0 +1,79 @@
+image: gitlab-registry.cern.ch/alialfred/fredserver:latest
+
+stages:
+  - env_build
+  - build
+  - parser
+  - run
+
+ALFDummies:
+  stage: env_build
+  script:
+  - mkdir ALFDummies
+  - cd ALFDummies
+  - mkdir FLP042
+  - cd FLP042
+  - git clone https://ci:1TaP29UZGhqT8mZDqvQM@gitlab.cern.ch/mdonadon/ALFDummy.git
+  - cd ALFDummy
+  - git checkout service-image
+  - source scl_source enable devtoolset-7 || true
+  - cmake3 .
+  - make all
+  - cd ../..
+  - mkdir FLP001
+  - cd FLP001
+  - git clone https://ci:1TaP29UZGhqT8mZDqvQM@gitlab.cern.ch/mdonadon/ALFDummy.git
+  - cd ALFDummy
+  - git checkout service-image
+  - source scl_source enable devtoolset-7 || true
+  - cmake3 .
+  - make all
+  artifacts:
+    paths:
+      - ./ALFDummies/FLP001/ALFDummy/bin/ALFDummy
+      - ./ALFDummies/FLP042/ALFDummy/bin/ALFDummy
+  
+dimclient:
+  stage: env_build
+  script:
+  - git clone https://ci:AQ_enqnMHALT6x5PCuv8@gitlab.cern.ch/mdonadon/DIMClient.git
+  - cd DIMClient
+  - source scl_source enable devtoolset-7 || true
+  - cmake3 .
+  - make all
+  artifacts:
+    paths:
+      - ./DIMClient/bin/DIMClient
+
+build:
+  stage: build
+  script:
+  - source scl_source enable devtoolset-7 || true
+  - cmake3 .
+  - make all
+  artifacts:
+    paths:
+      - ./bin/FREDServer
+      - ./lib/libAlfred.so
+      
+parser:
+  stage: parser
+  script:
+  - ./CI/parser.sh
+
+run:
+  stage: run
+  script:
+  - ./CI/run_dns.sh
+  - sleep 10
+  - ./CI/run_alfdummies.sh
+  - sleep 10
+  - cp -r ./examples/config/ .
+  - cp -r ./examples/IC/* .
+  - cp -r ./examples/SCA/* .
+  - cp -r ./examples/SWT/* .
+  - sed -i 's/dimdnsexample.cern.ch/localhost/g' ./config/fred.conf
+  - bin/FREDServer --v &
+  - sleep 10
+  - ps
+  - ./CI/run_dimclient.sh
