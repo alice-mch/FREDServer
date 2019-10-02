@@ -83,7 +83,7 @@ public:
 class RpcInfoString: public RpcInfo
 {
 private:
-    char noLink[1];
+    char noLink[20];
 
 public:
     RpcInfoString(string name, string dns, ALFRED* alfred);

@@ -250,7 +250,9 @@ void* RpcInfoFloat::Send(float value)
 RpcInfoString::RpcInfoString(string name, string dns, ALFRED* alfred): RpcInfo::RpcInfo(name, dns, alfred)
 {
     type = DIM_TYPE::STRING;
-    noLink[0] = '\0';
+
+    strcpy(noLink, "NO RPC LINK!"); //response from the callback when link is dow
+
     rpcInfo = new DimRpcInfo(name.c_str(), noLink);
 
     PrintVerbose(string("RpcInfo ") + name + " registered!");
