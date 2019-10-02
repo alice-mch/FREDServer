@@ -1,14 +1,13 @@
 #include "Alfred/print.h"
-#include "Fred/fredMode.h"
 #include <sys/time.h>
 #include <time.h>
 #include <math.h>
 #include <fstream>
 #include <iomanip>
 
+extern bool verbose;
 extern bool logToFile;
 extern string logFilePath;
-extern int fredMode;
 
 void Print(const string type, const string message)
 {
@@ -73,7 +72,7 @@ void PrintInfo(string message)
 
 void PrintVerbose(string message)
 {
-	if (fredMode == VERBOSE)
+	if (verbose)
 	{
 		Print(string(ANSI_COLOR_BLUE) + "VERBOSE" + ANSI_COLOR_RESET, message);
 	}
@@ -82,7 +81,6 @@ void PrintVerbose(string message)
 /*
  * Print functions with topic name before message, useful for debugging overlapping execution of topics 
  */
-
 void PrintError(string topic, string message)
 {
 	string suffix = topic.substr(topic.size() - 4, topic.size());
