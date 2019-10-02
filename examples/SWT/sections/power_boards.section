@@ -4,7 +4,8 @@ POWER_BOARDS = {
     }
 
     MAPPING = {
-        POWERUNIT[0,1] = ALF1/SERIAL_0/LINK_1
+        POWERUNIT[0,1,2,3] = ALF_FLP042/SERIAL_0/LINK_1
+        POWERUNIT[4,5,6,7] = ALF_FLP042/SERIAL_2/LINK_6
     }
 
     GROUPS = {
@@ -19,5 +20,9 @@ POWER_BOARDS = {
             CH = [0..15]
         }
         TEMPERATURE/READ_ALL = POWERUNIT[..]/TEMPERATURE/READ
+    }
+
+    MASK = {
+        POWERUNIT[3,6]
     }
 }

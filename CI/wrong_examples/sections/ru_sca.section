@@ -1,5 +1,5 @@
 RU_SCA = {
-    INSTRUCTIONS = {
+    INSTRUCTIONSSS = {
         PATH = ../boards/ru_sca/ru_sca.conf
     }
 
