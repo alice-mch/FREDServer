@@ -2,7 +2,7 @@
 
 echo "Run DIMClient Bash script started"
 
-cd /builds/mdonadon/FREDServer/DIMClient
+cd /builds/alialfred/FREDServer/DIMClient
 export DIM_DNS_NODE=localhost
 
 bin/DIMClient --F --t FRED1/POWER_BOARDS/POWERUNIT1/INIT
