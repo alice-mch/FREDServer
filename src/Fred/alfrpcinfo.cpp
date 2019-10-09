@@ -50,3 +50,8 @@ bool AlfRpcInfo::isTransactionAvailable()
 {
     return this->currentTransaction.first && this->currentTransaction.second;
 }
+
+string& AlfRpcInfo::getName()
+{
+    return this->name;
+}
