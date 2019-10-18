@@ -10,7 +10,7 @@
 #include "Fred/Config/instructions.h"
 #include "Fred/Protocols/IC.h"
 
-string IC::generateMessage(Instructions::Instruction& instructions, vector<string>& outputPattern, ProcessMessage* processMessage)
+vector<string> IC::generateMessage(Instructions::Instruction& instructions, vector<string>& outputPattern, vector<string>& pollPattern, ProcessMessage* processMessage)
 {
 	string message;
 	for (size_t i = 0; i < instructions.message.size(); i++)
@@ -20,7 +20,7 @@ string IC::generateMessage(Instructions::Instruction& instructions, vector<strin
 
     }
     message.erase(message.size() - 1);
-    return message;
+    return vector<string>({ message });
 }
 
 void IC::checkIntegrity(const string& request, const string& response)

@@ -10,13 +10,13 @@ const void* CruAlfRpcInfo::Execution(void *value) //todo
 {
     if (!value)
     {
-        PrintError("Invalid RPC Info received!");
+        Print::PrintError("Invalid RPC Info received!");
         return NULL;
     }
 
     string response(static_cast<char*>(value));
 
-    PrintVerbose("Received RPC Info:\n" + response);
+    Print::PrintVerbose("Received RPC Info:\n" + response);
 
     if (response.find("success") != string::npos || response.find("failure") != string::npos)
     {

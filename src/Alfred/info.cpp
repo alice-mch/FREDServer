@@ -46,7 +46,7 @@ Info::Info(string name, ALFRED* alfred)
 
 	if (!alfred)
 	{
-		PrintError(string("ALFRED for info ") + name + " not defined!");
+        Print::PrintError(string("ALFRED for info ") + name + " not defined!");
 		exit(EXIT_FAILURE);	
 	}
 
@@ -54,7 +54,7 @@ Info::Info(string name, ALFRED* alfred)
 
 	if (AlreadyRegistered(name))
 	{
-		PrintError(string("Info ") + name + " already registered!");
+        Print::PrintError(string("Info ") + name + " already registered!");
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -104,7 +104,7 @@ void Info::CallFunction(string name, void* value)
 
 	if (function->Type() != FNC_TYPE::SHOT)
 	{
-		PrintError("Cannot call non-shot function!");
+        Print::PrintError("Cannot call non-shot function!");
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -144,7 +144,7 @@ InfoInt::InfoInt(string name, ALFRED* alfred): Info::Info(name, alfred), DimInfo
 {
 	type = DIM_TYPE::INT;
 
-	PrintVerbose(string("Info ") + name + " registered!");
+    Print::PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoInt::~InfoInt()
@@ -185,7 +185,7 @@ InfoFloat::InfoFloat(string name, ALFRED* alfred): Info::Info(name, alfred), Dim
 {
 	type = DIM_TYPE::FLOAT;
 
-	PrintVerbose(string("Info ") + name + " registered!");
+    Print::PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoFloat::~InfoFloat()
@@ -227,7 +227,7 @@ InfoString::InfoString(string name, ALFRED* alfred): Info::Info(name, alfred), D
     type = DIM_TYPE::STRING;
     noLink[0] = '\0';
 
-    PrintVerbose(string("Info ") + name + " registered!");
+    Print::PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoString::~InfoString()
@@ -268,7 +268,7 @@ InfoData::InfoData(string name, ALFRED* alfred): Info::Info(name, alfred), DimIn
 {
 	type = DIM_TYPE::DATA;
 
-	PrintVerbose(string("Info ") + name + " registered!");
+    Print::PrintVerbose(string("Info ") + name + " registered!");
 }
 
 InfoData::~InfoData()
@@ -282,7 +282,7 @@ void InfoData::infoHandler()
 
 	if (!value)
 	{
-		PrintWarning(string("Info ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Info ") + Name() + " not valid data!");
 		return;
 	}
 

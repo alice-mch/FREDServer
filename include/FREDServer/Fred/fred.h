@@ -12,7 +12,8 @@
 class Fred: public ALFRED
 {
 private:
-    static void terminate(int);
+    static void termFred(int);
+    static bool terminate;
     void generateAlfs();
     void generateTopics();
 
@@ -33,6 +34,7 @@ public:
     string getFredDns();
 
     void registerMapiObject(string topic, Mapi* mapi);
+    void Start();
 };
 
 #endif // FRED_H

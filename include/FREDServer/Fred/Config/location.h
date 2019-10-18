@@ -19,13 +19,12 @@ public:
             vector<int32_t> links;
         };
 
-        string dns;
         string id; //ALF_ID
         map<int32_t, SerialEntry> serials;
     };
 
+protected:
     map<string, AlfEntry> alfs;
-
 };
 
 #endif // LOCATION_H

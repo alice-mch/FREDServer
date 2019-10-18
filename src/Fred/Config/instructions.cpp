@@ -40,7 +40,7 @@ vector<string> Instructions::processConfigFile(string file)
 
             if(!std::regex_match(name, rgx))
             {
-                PrintError("Topic " + name + " in file " + file + " contains bad character(s)");
+                Print::PrintError("Topic " + name + " in file " + file + " contains bad character(s)");
                 throw runtime_error("Bad character");
             }
 
@@ -71,7 +71,7 @@ vector<string> Instructions::processConfigFile(string file)
                     }
                     else
                     {
-                        PrintError(this->path + " has invalid type name " + right + " in topic " + name);
+                        Print::PrintError(this->path + " has invalid type name " + right + " in topic " + name);
                         throw runtime_error("TYPE");
                     }
                 }
@@ -100,13 +100,13 @@ vector<string> Instructions::processConfigFile(string file)
                     instruction.message = processSequenceFile(this->path.substr(0, this->path.find_last_of("/")) + "/" + right);
                     if (instruction.message.empty())
                     {
-                        PrintError("Sequence File in " + name + " topic doesn't exist or is empty");
+                        Print::PrintError("Sequence File in " + name + " topic doesn't exist or is empty");
                         throw runtime_error("Sequence File doesn't exist or is empty");
                     }
                 }
                 else
                 {
-                    PrintError(this->path + " has invalid instruction name " + left + " in topic " + name);
+                    Print::PrintError(this->path + " has invalid instruction name " + left + " in topic " + name);
                     throw runtime_error("invalid instruction name");
                 }
             }

@@ -20,7 +20,7 @@ vector<string> Parser::findFiles(string directory)
     DIR* dir = opendir(directory.c_str());
     if (!dir)
     {
-        PrintError("Cannot open directory " + directory + "!");
+        Print::PrintError("Cannot open directory " + directory + "!");
         return vector<string>();
     }
 
@@ -85,20 +85,20 @@ vector<Section> Parser::parseSections()
                 }
                 else
                 {
-                    PrintError(files[i] + " has invalid name of paragraph: " + name + "!");
+                    Print::PrintError(files[i] + " has invalid name of paragraph: " + name + "!");
                     this->badFiles = true;
                 }
             }
 
             if(!instructionsLines.size()) //section INSTRUCTIONS is mandatory
             {
-                PrintError("INSTRUCTIONS section in " + files[i] + " is missing!");
+                Print::PrintError("INSTRUCTIONS section in " + files[i] + " is missing!");
                 this->badFiles = true;
 
             }
             if (!mappingLines.size()) //section MAPPING is mandatory
             {
-                PrintError("MAPPING section in " + files[i] + " is missing!");
+                Print::PrintError("MAPPING section in " + files[i] + " is missing!");
                 this->badFiles = true;
             }
 
@@ -141,14 +141,14 @@ void Parser::checkGroup(Section section)
     {   
         if (!(find(topics.begin(), topics.end(), i->topicName) != topics.end()))
         {
-            PrintError("Topic " + i->topicName + " from group " + i->name + " in section " 
+            Print::PrintError("Topic " + i->topicName + " from group " + i->name + " in section "
                 + section.getName() + " is not an existing topic!");
             throw runtime_error("Non existing group topic");
         }
 
         if(i->unitIds.size() == 0)
         {
-            PrintError("Group " + i->name + " in section " + section.getName() + " has no units!");
+            Print::PrintError("Group " + i->name + " in section " + section.getName() + " has no units!");
             throw runtime_error("Group with no units");
         }
 
@@ -166,7 +166,7 @@ void Parser::checkGroup(Section section)
 
             if (!found)
             {
-                PrintError("Unit " + to_string(i->unitIds[j]) + " from group " + i->name + " in section " 
+                Print::PrintError("Unit " + to_string(i->unitIds[j]) + " from group " + i->name + " in section "
                     + section.getName() + " is not an existing unit!");
                 throw runtime_error("Non existing unit");
             }
@@ -181,7 +181,7 @@ vector<string> Parser::readFile(string fileName, string directory)
     ifstream inFile(directory + "/" + fileName);
     if (!inFile.is_open())
     {
-        PrintError("Cannot open file " + fileName + " in directory '" + directory + "'!");
+        Print::PrintError("Cannot open file " + fileName + " in directory '" + directory + "'!");
     }
 
     vector<string> lines;
@@ -256,7 +256,8 @@ vector<string> Parser::getSubsection(vector<string> full, string bracets, string
     }
     catch (exception& error) 
     {
-        PrintError("Exception in getSubsection while parsing " + name);
+        Print::PrintError("Exception in getSubsection while parsing " + name);
+        return vector<string>();
     }
 }
 
@@ -276,7 +277,7 @@ bool Parser::balancedBraces(vector<string> lines, string name)
 
     if(c != 0)
     {
-        PrintError(name + " has mismatched braces!");
+        Print::PrintError(name + " has mismatched braces!");
     }
 
     return c == 0 ? 1 : 0;

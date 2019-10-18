@@ -39,7 +39,7 @@ Service::Service(string name, ALFRED* alfred)
 
 	if (!alfred)
 	{
-		PrintError(string("ALFRED for service ") + name + " not defined!");
+        Print::PrintError(string("ALFRED for service ") + name + " not defined!");
 		exit(EXIT_FAILURE);	
 	}
 
@@ -47,7 +47,7 @@ Service::Service(string name, ALFRED* alfred)
 
 	if (AlreadyRegistered(name))
 	{
-		PrintError(string("Service ") + name + " already registered!");
+        Print::PrintError(string("Service ") + name + " already registered!");
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -65,7 +65,7 @@ void* Service::GetValuePnt()
 {
 	if (!value)
 	{
-		PrintError("Accessing invalid pointer!");
+        Print::PrintError("Accessing invalid pointer!");
 		exit(EXIT_FAILURE);
 	}
 
@@ -81,7 +81,7 @@ void Service::Update()
 {
 	if (!service)
 	{
-		PrintError("Accessing invalid pointer!");
+        Print::PrintError("Accessing invalid pointer!");
 		exit(EXIT_FAILURE);
 	}
 
@@ -99,7 +99,7 @@ void Service::Update(const void* value)
 
 	if (!this->value || !value)
 	{
-		PrintWarning(string("Service ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Service ") + Name() + " not valid data!");
 		return;
 	}
 
@@ -131,7 +131,7 @@ ServiceInt::ServiceInt(string name, ALFRED* alfred): Service::Service(name, alfr
 	service = new DimService(name.c_str(), *(int*)value);
 	type = DIM_TYPE::INT;
 
-	PrintVerbose(string("Service ") + name + " registered!");
+    Print::PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceInt::~ServiceInt()
@@ -149,7 +149,7 @@ ServiceFloat::ServiceFloat(string name, ALFRED* alfred): Service::Service(name, 
 	service = new DimService(name.c_str(), *(float*)value);
 	type = DIM_TYPE::FLOAT;
 
-	PrintVerbose(string("Service ") + name + " registered!");
+    Print::PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceFloat::~ServiceFloat()
@@ -166,7 +166,7 @@ ServiceString::ServiceString(string name, ALFRED* alfred): Service::Service(name
     service = new DimService(name.c_str(), (char*)value);
     type = DIM_TYPE::STRING;
 
-    PrintVerbose(string("Service ") + name + " registered!");
+    Print::PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceString::~ServiceString()
@@ -184,7 +184,7 @@ ServiceData::ServiceData(string name, ALFRED* alfred, size_t size, string format
 	service = new DimService(name.c_str(), format.c_str(), value, size);
 	type = DIM_TYPE::DATA;
 
-	PrintVerbose(string("Service ") + name + " registered!");
+    Print::PrintVerbose(string("Service ") + name + " registered!");
 }
 
 ServiceData::~ServiceData()

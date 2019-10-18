@@ -17,6 +17,9 @@ private:
     bool isTransactionAvailable();
     string name;
 
+    string fullResponse;
+    size_t currentPart, pollRepeat;
+
 public:
     AlfRpcInfo(string name, string dns, Fred* fred);
     void setTransaction(pair<ProcessMessage*, ChainTopic*> currentTransaction);

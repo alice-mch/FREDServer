@@ -10,7 +10,26 @@
 #include "Fred/Config/instructions.h"
 #include "Fred/Protocols/SCA.h"
 
-string SCA::generateMessage(Instructions::Instruction& instructions, vector<string>& outputPattern, ProcessMessage* processMessage)
+void SCA::SCApad(string& line)
+{
+    stringstream ss;
+
+    size_t comma = line.find(',');
+    if (comma != string::npos)
+    {
+        unsigned long command, data;
+        command = stol(line.substr(0, comma), 0, 16);
+        data = stol(line.substr(comma + 1), 0, 16);
+
+        if (command > 0xffffffff || data > 0xffffffff) throw runtime_error("SCA 16 bits exceeded!");
+
+        ss << "0x" << setw(8) << setfill('0') << hex << command << "," << "0x" << setw(8) << setfill('0') << hex << data;
+        line = ss.str();
+    }
+    else throw runtime_error("SCA comma is missing!");
+}
+
+vector<string> SCA::generateMessage(Instructions::Instruction& instructions, vector<string>& outputPattern, vector<string>& pollPattern, ProcessMessage* processMessage)
 {
     string message;
     bool parseInVar = instructions.inVar.size() > 0;
@@ -18,45 +37,60 @@ string SCA::generateMessage(Instructions::Instruction& instructions, vector<stri
     int32_t multiplicity = processMessage->getMultiplicity();
     size_t messageSize = instructions.message.size();
 
+    vector<string> result;
+
     for (int32_t m = 0; m < multiplicity; m++)
     {
         for (size_t i = 0; i < messageSize; i++)
         {
             string outVar;
-            stringstream ss;
             string line = instructions.message[i];
 
             if (parseInVar) processMessage->parseInputVariables(line, instructions.inVar, m); //parse invariables
 
-            size_t atPos = line.find('@');
+            size_t dolPos = line.find('$'); //user poll
+            if (dolPos != string::npos)
+            {
+                string pollEqn = line.substr(dolPos + 1);
 
+                line.erase(dolPos); //remove $eqn
+
+                SCApad(line);
+
+                if (!message.empty())
+                {
+                    result.push_back(message.erase(message.size() - 1));
+                    pollPattern.push_back("");
+                    message = "";
+                }
+
+                result.push_back(line);
+                pollPattern.push_back(pollEqn);
+
+                continue;
+            }
+
+            size_t atPos = line.find('@');
             if (atPos != string::npos)
             {
                 outVar = line.substr(atPos + 1);
                 line.erase(atPos); //remove @OUT_VAR
             }
 
-            size_t comma = line.find(',');
-            if (comma != string::npos)
-            {
-                unsigned long command, data;
-                command = stol(line.substr(0, comma), 0, 16);
-                data = stol(line.substr(comma + 1), 0, 16);
-
-                if (command > 0xffffffff || data > 0xffffffff) throw runtime_error("SCA 16 bits exceeded!");
-
-                ss << "0x" << setw(8) << setfill('0') << hex << command << "," << "0x" << setw(8) << setfill('0') << hex << data;
-                line = ss.str();
-            }
-            else throw runtime_error("SCA comma is missing!");
+            SCApad(line);
 
             outputPattern.push_back(outVar); //push_back outvar name, empty string if not present
             message += line + "\n";
         }
     }
 
-    message.erase(message.size() - 1);
-    return message;
+    if (!message.empty())
+    {
+        result.push_back(message.erase(message.size() - 1));
+        pollPattern.push_back("");
+    }
+
+    return result;
 }
 
 void SCA::checkIntegrity(const string& request, const string& response)

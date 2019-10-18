@@ -20,10 +20,11 @@ const string ProcessMessage::FAILURE = "failure";
 /*
  * ProcessMessage constructor for regular topics 
  */
-ProcessMessage::ProcessMessage(string message, int32_t placeId)
+ProcessMessage::ProcessMessage(string message, int32_t placeId, bool useCru)
 {
     groupCommand = NULL;
     mapi = NULL;
+    this->useCru = useCru;
     correct = checkMessage(message);
     if (correct)
     {
@@ -40,12 +41,12 @@ ProcessMessage::ProcessMessage(string message, int32_t placeId)
         size_t inSize = input.size();
         if (inSize)
         {
-            for (size_t i = 0; i < inSize; i++) input[i].insert(input[i].begin(), uint32_t(placeId));
+            for (size_t i = 0; i < inSize; i++) input[i].insert(input[i].begin(), double(placeId));
         }
         else
         {
-            input.push_back(vector<uint32_t>());
-            input[0].push_back(uint32_t(placeId));
+            input.push_back(vector<double>());
+            input[0].push_back(double(placeId));
         }
     }
     else
@@ -58,11 +59,12 @@ ProcessMessage::ProcessMessage(string message, int32_t placeId)
 /*
  * ProcessMessage constructor for group topics 
  */
-ProcessMessage::ProcessMessage(map<string, vector<uint32_t> > inVars, int32_t placeId, GroupCommand* groupCommand)
+ProcessMessage::ProcessMessage(map<string, vector<double> > inVars, int32_t placeId, GroupCommand* groupCommand, bool useCru)
 {
     this->groupCommand = groupCommand;
     mapi = NULL;
     correct = true;
+    this->useCru = useCru;
 
     size_t varSize = inVars.size();
     if (varSize > 0)
@@ -87,29 +89,30 @@ ProcessMessage::ProcessMessage(map<string, vector<uint32_t> > inVars, int32_t pl
     size_t inSize = input.size();
     if (inSize)
     {
-        for (size_t i = 0; i < inSize; i++) input[i].insert(input[i].begin(), uint32_t(placeId));
+        for (size_t i = 0; i < inSize; i++) input[i].insert(input[i].begin(), double(placeId));
     }
     else
     {
-        input.push_back(vector<uint32_t>());
-        input[0].push_back(uint32_t(placeId));
+        input.push_back(vector<double>());
+        input[0].push_back(double(placeId));
     }
 }
 
 /*
  * ProcessMessage constructor for MAPI topics 
  */
-ProcessMessage::ProcessMessage(Mapi* mapi, string input)
+ProcessMessage::ProcessMessage(Mapi* mapi, string input, bool useCru)
 {
     this->mapi = mapi;
     this->fullMessage = input;
+    this->useCru = useCru;
 }
 
 bool ProcessMessage::checkMessage(string& message)
 {
     for (size_t i = 0; i < message.size(); i++)
     {
-        if (!(isxdigit(message[i])  || message[i] == ',' || message[i] == '\n' || message[i] == 'x'))
+        if (!(isxdigit(message[i])  || message[i] == ',' || message[i] == '\n' || message[i] == 'x' || message[i] == '.'))
         {
             return false;
         }
@@ -128,24 +131,42 @@ bool ProcessMessage::isCorrect()
     return correct;
 }
 
-string ProcessMessage::generateFullMessage(Instructions::Instruction& instructions)
+vector<string> ProcessMessage::generateFullMessage(Instructions::Instruction& instructions)
 {
     outputPattern.clear(); //clear outvar name vector
+    pollPattern.clear();
+
+    vector<string> fullMessage;
+
     try
     {
         switch (instructions.type)
         {
-            case Instructions::Type::SWT: fullMessage = SWT::generateMessage(instructions, outputPattern, this);
+            case Instructions::Type::SWT: fullMessage = SWT::generateMessage(instructions, outputPattern, pollPattern, this);
                 break;
-            case Instructions::Type::SCA: fullMessage = SCA::generateMessage(instructions, outputPattern, this);
+            case Instructions::Type::SCA: fullMessage = SCA::generateMessage(instructions, outputPattern, pollPattern, this);
                 break;
-            case Instructions::Type::IC: fullMessage = IC::generateMessage(instructions, outputPattern, this);
+            case Instructions::Type::IC: fullMessage = IC::generateMessage(instructions, outputPattern, pollPattern, this);
                 break;
         }
     }
     catch (exception& e)
     {
         throw runtime_error(e.what());
+    }
+
+    this->fullMessage.clear();
+    for (size_t i = 0; i < fullMessage.size(); i++)
+    {
+        if (pollPattern[i].empty())
+        {
+            this->fullMessage += fullMessage[i] + "\n";
+        }
+    }
+
+    if (!this->fullMessage.empty())
+    {
+        this->fullMessage.erase(this->fullMessage.size() - 1);
     }
 
     return fullMessage;
@@ -202,7 +223,7 @@ vector<double> ProcessMessage::calculateReadbackResult(vector<vector<unsigned lo
 
     for (size_t m = 0; m < getMultiplicity(); m++)
     {
-        vector<uint32_t> received;
+        vector<double> received;
         for (size_t v = 0; v < outVars.size(); v++) received.push_back(result[v][m]);
 
         resultValues.push_back(Utility::calculateEquation(instructions.equation, outVars, received));
@@ -245,7 +266,7 @@ void ProcessMessage::updateResponse(ChainTopic& chainTopic, string response, boo
         if (groupCommand == NULL)
         {
             chainTopic.error->Update(response.c_str());
-            PrintError(chainTopic.name, "Updating error service!");
+            Print::PrintError(chainTopic.name, "Updating error service!");
         }
         else groupCommand->receivedResponse(&chainTopic, response, true);
     }
@@ -254,10 +275,24 @@ void ProcessMessage::updateResponse(ChainTopic& chainTopic, string response, boo
         if (groupCommand == NULL)
         {
             chainTopic.service->Update(response.c_str());
-            PrintVerbose(chainTopic.name, "Updating service");
+            Print::PrintVerbose(chainTopic.name, "Updating service");
         }
         else groupCommand->receivedResponse(&chainTopic, response, false);        
     }
+}
+
+bool ProcessMessage::checkLink(string message, ChainTopic& chainTopic)
+{
+    if (message == "NO RPC LINK!")
+    {
+        string response = "ALF_" + (this->getUseCru() ? chainTopic.unit->alfs.first.alfId : chainTopic.unit->alfs.second.alfId) + " is not responding!";
+        Print::PrintError(chainTopic.name, response);
+
+        updateResponse(chainTopic, response, true);
+        return false;
+    }
+
+    return true;
 }
 
 void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, bool ignoreStatus)
@@ -267,15 +302,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
         //if (!ignoreStatus) //ignoreStatus is true only for alfinfo (not the usual alfrpcinfo), so for SUBSCRIBE only
         //{
             string response;
-            if (message == "NO RPC LINK!")
-            {
-                response = "ALF_" + chainTopic.unit->alfId + " is not responding!";
-                PrintError(chainTopic.name, response);
-                
-                updateResponse(chainTopic, response, true);
-                return;
-            }
-            else if (message.find(SUCCESS) != string::npos) //SUCCESS
+            if (message.find(SUCCESS) != string::npos) //SUCCESS
             {
                 vector<vector<unsigned long> > values;
                 try
@@ -285,7 +312,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                 }
                 catch (exception& e)
                 {
-                    PrintError(chainTopic.name, e.what());
+                    Print::PrintError(chainTopic.name, e.what());
                     response = e.what();
                     replace(message.begin(), message.end(), '\n', ';');
                     response += ";" + message;
@@ -321,17 +348,17 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
                 if (message.empty()) //empty message
                 {
                     response = "Empty response received!";
-                    PrintError(chainTopic.name, response);
+                    Print::PrintError(chainTopic.name, response);
                 }
                 else if (message.find(FAILURE) != string::npos) //FAILURE message
                 {
-                    PrintError(chainTopic.name, "Error message received:\n" + message + "\n");
+                    Print::PrintError(chainTopic.name, "Error message received:\n" + message + "\n");
                     replace(message.begin(), message.end(), '\n', ';');
                     response = message;
                 }
                 else //unknown message
                 {
-                    PrintError(chainTopic.name, "Unknown message received:\n" + message + "\n");
+                    Print::PrintError(chainTopic.name, "Unknown message received:\n" + message + "\n");
                     replace(message.begin(), message.end(), '\n', ';');
                     response = message;
                 }
@@ -350,7 +377,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
         //    }
         //    catch (exception& e)
         //    {
-        //        PrintError(chainTopic.name, e.what());
+        //        Print::PrintError(chainTopic.name, e.what());
         //        response = e.what();
         //        replace(message.begin(), message.end(), '\n', ';');
         //        response += ";" + message;
@@ -384,7 +411,7 @@ void ProcessMessage::evaluateMessage(string message, ChainTopic &chainTopic, boo
     catch (exception& e)
     {
         string response = "Error in message evaluation! Incorrect data received!";
-        PrintError(chainTopic.name, response);
+        Print::PrintError(chainTopic.name, response);
         updateResponse(chainTopic, response, true);
     }
 }
@@ -403,18 +430,28 @@ void ProcessMessage::evaluateMapiMessage(string message, ChainTopic& chainTopic)
         if (mapi->returnError)
         {
             chainTopic.error->Update(response.c_str());
-            PrintError(chainTopic.name, "Updating MAPI error service!");
+            Print::PrintError(chainTopic.name, "Updating MAPI error service!");
             mapi->returnError = false; //reset returnError
         }
         else
         {
             chainTopic.service->Update(response.c_str());
-            PrintVerbose(chainTopic.name, "Updating MAPI service");
+            Print::PrintVerbose(chainTopic.name, "Updating MAPI service");
         }
     }
     else
     {
-        PrintVerbose(chainTopic.name, "Mapi is noReturn");
+        Print::PrintVerbose(chainTopic.name, "Mapi is noReturn");
         mapi->noReturn = false; //reset noReturn
     }
+}
+
+vector<string>* ProcessMessage::getPollPattern()
+{
+    return &this->pollPattern;
+}
+
+bool ProcessMessage::getUseCru()
+{
+    return useCru;
 }

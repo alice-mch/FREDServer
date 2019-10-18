@@ -36,7 +36,7 @@ Client::Client(string name, ALFRED* alfred)
 
 	if (!alfred)
 	{
-		PrintError(string("ALFRED for client ") + name + " not defined!");
+        Print::PrintError(string("ALFRED for client ") + name + " not defined!");
 		exit(EXIT_FAILURE);	
 	}
 
@@ -44,7 +44,7 @@ Client::Client(string name, ALFRED* alfred)
 
 	if (AlreadyRegistered(name))
 	{
-		PrintError(string("Client ") + name + " already registered!");
+        Print::PrintError(string("Client ") + name + " already registered!");
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -75,7 +75,7 @@ void Client::Send(void* value)
 			((ClientData*)this)->Send(value, size);
 			break;
 		default:
-			PrintError("Invalid type of client!");
+            Print::PrintError("Invalid type of client!");
 			exit(EXIT_FAILURE);
 	}
 }
@@ -102,7 +102,7 @@ ClientInt::ClientInt(string name, ALFRED* alfred): Client::Client(name, alfred)
 	size = 4;
 	type = DIM_TYPE::INT;
 
-	PrintVerbose(string("Client ") + name + " registered!");
+    Print::PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientInt::~ClientInt()
@@ -122,7 +122,7 @@ ClientFloat::ClientFloat(string name, ALFRED* alfred): Client::Client(name, alfr
 	size = 4;
 	type = DIM_TYPE::FLOAT;
 
-	PrintVerbose(string("Client ") + name + " registered!");
+    Print::PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientFloat::~ClientFloat()
@@ -141,7 +141,7 @@ ClientString::ClientString(string name, ALFRED* alfred): Client::Client(name, al
 {
     type = DIM_TYPE::STRING;
 
-    PrintVerbose(string("Client ") + name + " registered!");
+    Print::PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientString::~ClientString()
@@ -161,7 +161,7 @@ ClientData::ClientData(string name, ALFRED* alfred, size_t size): Client::Client
 	this->size = size;
 	type = DIM_TYPE::DATA;
 
-	PrintVerbose(string("Client ") + name + " registered!");
+    Print::PrintVerbose(string("Client ") + name + " registered!");
 }
 
 ClientData::~ClientData()
@@ -173,7 +173,7 @@ void ClientData::Send(void* value, size_t size)
 {
 	if (!value || !size)
 	{
-		PrintWarning(string("Client ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Client ") + Name() + " not valid data!");
 		return;
 	}
 

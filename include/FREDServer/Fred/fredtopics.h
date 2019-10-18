@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <utility>
 #include "Fred/mappedcommand.h"
 #include "Fred/subscribecommand.h"
 #include "Fred/groupcommand.h"
@@ -22,18 +23,17 @@ class Queue;
 struct ChainTopic
 {
     string name;
+
     CommandString* command;
     ServiceString* service;
     ServiceString* error;
-    Instructions::Instruction* instruction;
-    AlfRpcInfo* alfLink;
-    Queue* alfQueue;
-    Mapping::Unit* unit;
-    //string alfDns;
-    int32_t placeId;
 
-    AlfInfo* alfInfo;
-    float interval;
+    pair<AlfRpcInfo*, AlfRpcInfo*> alfLink;
+    pair<Queue*, Queue*> alfQueue;
+
+    Instructions::Instruction* instruction;
+    Mapping::Unit* unit;
+    int32_t placeId;
 
     Mapi* mapi;
 };
@@ -41,12 +41,15 @@ struct ChainTopic
 struct GroupTopic
 {
     string name;
+
     GroupCommand* command;
     ServiceString* service;
     ServiceString* error;
+
     Instructions::Instruction* instruction;
     vector<ChainTopic*> chainTopics;
-    map<string, vector<uint32_t> > inVars;
+
+    map<string, vector<double> > inVars;
     vector<int32_t> unitIds;
 };
 

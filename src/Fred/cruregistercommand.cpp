@@ -28,20 +28,25 @@ const void* CruRegisterCommand::Execution(void *value)
 {
     if (!value)
     {
-        PrintError("Invalid request, no value received!");
+        Print::PrintError("Invalid request, no value received!");
     }
 
     string request(static_cast<char*>(value));
 
-    PrintVerbose("Received command:\n" + request);
+    Print::PrintVerbose("Received command:\n" + request);
 
-    vector<uint32_t> splitted = Utility::splitString2Num(request, ",");
+    vector<uint32_t> splitted;
+    vector<double> splittedDouble = Utility::splitString2Num(request, ",");
+    for (size_t i = 0; i < splittedDouble.size(); i++)
+    {
+        splitted.push_back(uint32_t(splittedDouble[i]));
+    }
 
     if (this->type == WRITE)
     {
         if (splitted.size() < 4)
         {
-            PrintError("Invalid number of arguments received for CRU_REGISTER WRITE");
+            Print::PrintError("Invalid number of arguments received for CRU_REGISTER WRITE");
             return NULL;
         }
 
@@ -51,7 +56,7 @@ const void* CruRegisterCommand::Execution(void *value)
     {
         if (splitted.size() < 3)
         {
-            PrintError("Invalid number of arguments received for CRU_REGISTER READ");
+            Print::PrintError("Invalid number of arguments received for CRU_REGISTER READ");
             return NULL;
         }
 
@@ -72,7 +77,7 @@ void CruRegisterCommand::executeWrite(vector<uint32_t>& message)
     RpcInfoString* rpcInfo = (RpcInfoString*)Parent()->GetRpcInfo(alfTopic);
     if (!rpcInfo)
     {
-        PrintError("Cannot find RPC Info " + alfTopic + "!");
+        Print::PrintError("Cannot find RPC Info " + alfTopic + "!");
         return;
     }
 
@@ -90,7 +95,7 @@ void CruRegisterCommand::executeRead(vector<uint32_t>& message)
     RpcInfoString* rpcInfo = (RpcInfoString*)Parent()->GetRpcInfo(alfTopic);
     if (!rpcInfo)
     {
-        PrintError("Cannot find RPC Info " + alfTopic + "!");
+        Print::PrintError("Cannot find RPC Info " + alfTopic + "!");
         return;
     }
 

@@ -22,13 +22,14 @@ void SWT::SWTpad(string& line)
 	line = ss.str();
 }
 
-string SWT::generateMessage(Instructions::Instruction& instructions, vector<string>& outputPattern, ProcessMessage* processMessage)
+vector<string> SWT::generateMessage(Instructions::Instruction& instructions, vector<string>& outputPattern, vector<string>& pollPattern, ProcessMessage* processMessage)
 {
 	bool parseInVar = instructions.inVar.size() > 0;
 
 	int32_t multiplicity = processMessage->getMultiplicity();
 	size_t messageSize = instructions.message.size();
 
+	vector<string> result;
 	string message = "reset\n";
 
 	for (int32_t m = 0; m < multiplicity; m++)
@@ -40,10 +41,32 @@ string SWT::generateMessage(Instructions::Instruction& instructions, vector<stri
 
 			if (parseInVar) processMessage->parseInputVariables(line, instructions.inVar, m); //parse invariables
 
-			if (line.find("0x") != string::npos) line = line.substr(2); //remove eventual "0x"
+			if (line.find("0x") == 0) line = line.substr(2); //remove eventual "0x"
+
+			size_t dolPos = line.find('$'); //user poll
+			if (dolPos != string::npos)
+			{
+				string pollEqn = line.substr(dolPos + 1);
+
+				line.erase(dolPos); //remove $eqn
+
+				SWTpad(line);
+				line += ",write\nread";
+
+				if (!message.empty())
+				{
+					result.push_back(message.erase(message.size() - 1));
+					pollPattern.push_back("");
+					message = "";
+				}
+
+				result.push_back(line);
+				pollPattern.push_back(pollEqn);
+
+				continue;
+			}
 
 			size_t atPos = line.find('@');
-
 			if (atPos != string::npos) //user read @OUT_VAR
 			{
 				outVar = line.substr(atPos + 1);
@@ -68,8 +91,13 @@ string SWT::generateMessage(Instructions::Instruction& instructions, vector<stri
 		}
 	}
 
-	message.erase(message.size() - 1);
-	return message;
+	if (!message.empty())
+	{
+		result.push_back(message.erase(message.size() - 1));
+		pollPattern.push_back("");
+	}
+
+	return result;
 }
 
 void SWT::checkIntegrity(const string& request, const string& response)

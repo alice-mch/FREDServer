@@ -13,10 +13,15 @@ using namespace std;
 class Iterativemapi: public Mapi
 {
 public:
+    Iterativemapi();
+
     void newRequest(string request);
     
     void publishAnswer(string message);
     void publishError(string error);
+
+protected:
+    bool useCru;
 };
 
 #endif // ITERATIVEMAPI_H

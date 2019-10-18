@@ -29,17 +29,31 @@ void Mapping::processUnit(string& left, string& right)
         else unit.unitIds.push_back(stoi(ids[i]));
     }
 
-    vector<string> path = Utility::splitString(right, "/");
-    if (path.size() == 3)
+    vector<string> paths = Utility::splitString(right, ",");
+    for (size_t i = 0; i < paths.size(); i++)
     {
-        unit.alfId = path[0].substr(4); //ALF_x
-        unit.serialId = stoi(path[1].substr(7)); //SERIAL_x
-        unit.linkId = stoi(path[2].substr(5)); //LINK_x
+        vector<string> path = Utility::splitString(paths[i], "/");
+        if (path.size() == 3)
+        {
+            Unit::Alf alf;
+            alf.alfId = path[0]; //ALF_x
+            alf.serialId = stoi(path[1].substr(path[1].find("_") + 1)); //SERIAL_x
+            alf.linkId = stoi(path[2].substr(path[2].find("_") + 1)); //LINK_x
 
-        processLocation(unit.alfId, unit.serialId, unit.linkId);
-
-        units.push_back(unit);
+            if (path[0].find("ALF") == 0)
+            {
+                processLocation(alf.alfId, alf.serialId, alf.linkId);
+                unit.alfs.first = alf;
+            }
+            else if (path[0].find("CANALF") == 0)
+            {
+                processLocation(alf.alfId, alf.serialId, alf.linkId);
+                unit.alfs.second = alf;
+            }
+        }
     }
+
+    units.push_back(unit);
 }
 
 void Mapping::processLocation(string alfId, int32_t serialId, int32_t linkId)

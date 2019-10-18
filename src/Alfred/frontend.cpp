@@ -44,7 +44,7 @@ Function::Function(string name, FrontEnd* frontend)
 
 	if (!frontend)
 	{
-		PrintError(string("FrontEnd for function ") + name + " not defined!");
+        Print::PrintError(string("FrontEnd for function ") + name + " not defined!");
 		exit(EXIT_FAILURE);	
 	}
 
@@ -52,7 +52,7 @@ Function::Function(string name, FrontEnd* frontend)
 
 	if (AlreadyRegistered(name))
 	{
-		PrintError(string("Function ") + name + " already registered!");
+        Print::PrintError(string("Function ") + name + " already registered!");
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -147,7 +147,7 @@ FunctionTimed::FunctionTimed(string name, FrontEnd* frontend, uint32_t interval,
 
 	if (pthread_create(&thread, NULL, &ThreadFnc, (void*)this))
 	{
-		PrintError("Cannot create new thread!");
+        Print::PrintError("Cannot create new thread!");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -202,7 +202,7 @@ FrontEnd::FrontEnd(ALFRED* alfred)
 {
 	if (!alfred)
 	{
-		PrintError("ALFRED for FrontEnd not defined!");
+        Print::PrintError("ALFRED for FrontEnd not defined!");
 		exit(EXIT_FAILURE);	
 	}
 
@@ -222,7 +222,7 @@ void FrontEnd::RegisterFunction(Function* function)
 	if (function)
 	{
 		functions[function->Name()] = function;
-		PrintVerbose(string("Function ") + function->Name() + " registered!");
+        Print::PrintVerbose(string("Function ") + function->Name() + " registered!");
 	}
 }
 
@@ -234,7 +234,7 @@ Function* FrontEnd::GetFunction(string name)
 	}
 	else
 	{
-		PrintError(string("No FrontEnd function ") + name + " exists!");
+        Print::PrintError(string("No FrontEnd function ") + name + " exists!");
 		exit(EXIT_FAILURE);
 	}
 }

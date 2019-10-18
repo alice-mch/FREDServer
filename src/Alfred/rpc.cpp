@@ -45,7 +45,7 @@ Rpc::Rpc(string name, ALFRED* alfred)
 
     if (!alfred)
     {
-        PrintError(string("ALFRED for rpc ") + name + " not defined!");
+        Print::PrintError(string("ALFRED for rpc ") + name + " not defined!");
         exit(EXIT_FAILURE);
     }
 
@@ -53,7 +53,7 @@ Rpc::Rpc(string name, ALFRED* alfred)
 
     if (AlreadyRegistered(name))
     {
-        PrintError(string("Rpc ") + name + " already registered!");
+        Print::PrintError(string("Rpc ") + name + " already registered!");
         exit(EXIT_FAILURE);
     }
     else
@@ -98,7 +98,7 @@ void Rpc::CallFunction(string name, void* value)
 
     if (function->Type() != FNC_TYPE::SHOT)
     {
-        PrintError("Cannot call non-shot function!");
+        Print::PrintError("Cannot call non-shot function!");
         exit(EXIT_FAILURE);
     }
     else
@@ -133,7 +133,7 @@ RpcInt::RpcInt(string name, ALFRED* alfred): Rpc::Rpc(name, alfred), DimRpc::Dim
 {
     type = DIM_TYPE::INT;
 
-    PrintVerbose(string("Rpc ") + name + " registered!");
+    Print::PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcInt::~RpcInt()
@@ -164,7 +164,7 @@ void RpcInt::rpcHandler()
 
     if (!result)
     {
-        PrintWarning(string("Rpc ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Rpc ") + Name() + " not valid data!");
         setData(noLink);
         return;
     }
@@ -178,7 +178,7 @@ RpcFloat::RpcFloat(string name, ALFRED* alfred): Rpc::Rpc(name, alfred), DimRpc:
 {
     type = DIM_TYPE::FLOAT;
 
-    PrintVerbose(string("Rpc ") + name + " registered!");
+    Print::PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcFloat::~RpcFloat()
@@ -209,7 +209,7 @@ void RpcFloat::rpcHandler()
 
     if (!result)
     {
-        PrintWarning(string("Rpc ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Rpc ") + Name() + " not valid data!");
         setData(noLink);
         return;
     }
@@ -224,7 +224,7 @@ RpcString::RpcString(string name, ALFRED* alfred): Rpc::Rpc(name, alfred), DimRp
     type = DIM_TYPE::STRING;
     noLink[0] = '\0';
 
-    PrintVerbose(string("Rpc ") + name + " registered!");
+    Print::PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcString::~RpcString()
@@ -255,7 +255,7 @@ void RpcString::rpcHandler()
 
     if (!result)
     {
-        PrintWarning(string("Rpc ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Rpc ") + Name() + " not valid data!");
         setData(noLink);
         return;
     }
@@ -270,7 +270,7 @@ RpcData::RpcData(string name, ALFRED* alfred, size_t size, string formatIn, stri
     type = DIM_TYPE::DATA;
     this->size = size;
 
-    PrintVerbose(string("Rpc ") + name + " registered!");
+    Print::PrintVerbose(string("Rpc ") + name + " registered!");
 }
 
 RpcData::~RpcData()
@@ -284,7 +284,7 @@ void RpcData::rpcHandler()
 
     if (!value)
     {
-        PrintWarning(string("Rpc ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Rpc ") + Name() + " not valid data!");
         setData(&noLink);
         return;
     }
@@ -308,7 +308,7 @@ void RpcData::rpcHandler()
 
     if (!result)
     {
-        PrintWarning(string("Rpc ") + Name() + " not valid data!");
+        Print::PrintWarning(string("Rpc ") + Name() + " not valid data!");
         setData(&noLink);
         return;
     }

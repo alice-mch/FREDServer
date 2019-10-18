@@ -45,7 +45,7 @@ Command::Command(string name, ALFRED* alfred)
 
 	if (!alfred)
 	{
-		PrintError(string("ALFRED for command ") + name + " not defined!");
+        Print::PrintError(string("ALFRED for command ") + name + " not defined!");
 		exit(EXIT_FAILURE);	
 	}
 
@@ -53,7 +53,7 @@ Command::Command(string name, ALFRED* alfred)
 
 	if (AlreadyRegistered(name))
 	{
-		PrintError(string("Command ") + name + " already registered!");
+        Print::PrintError(string("Command ") + name + " already registered!");
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -103,7 +103,7 @@ void Command::CallFunction(string name, void* value)
 
 	if (function->Type() != FNC_TYPE::SHOT)
 	{
-		PrintError("Cannot call non-shot function!");
+        Print::PrintError("Cannot call non-shot function!");
 		exit(EXIT_FAILURE);
 	}
 	else
@@ -143,7 +143,7 @@ CommandInt::CommandInt(string name, ALFRED* alfred): Command::Command(name, alfr
 {
 	type = DIM_TYPE::INT;
 
-	PrintVerbose(string("Command ") + name + " registered!");
+    Print::PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandInt::~CommandInt()
@@ -184,7 +184,7 @@ CommandFloat::CommandFloat(string name, ALFRED* alfred): Command::Command(name, 
 {
 	type = DIM_TYPE::FLOAT;
 
-	PrintVerbose(string("Command ") + name + " registered!");
+    Print::PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandFloat::~CommandFloat()
@@ -225,7 +225,7 @@ CommandString::CommandString(string name, ALFRED* alfred): Command::Command(name
 {
     type = DIM_TYPE::STRING;
 
-    PrintVerbose(string("Command ") + name + " registered!");
+    Print::PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandString::~CommandString()
@@ -266,7 +266,7 @@ CommandData::CommandData(string name, string format, ALFRED* alfred): Command::C
 {
 	type = DIM_TYPE::DATA;
 
-	PrintVerbose(string("Command ") + name + " registered!");
+    Print::PrintVerbose(string("Command ") + name + " registered!");
 }
 
 CommandData::~CommandData()
@@ -280,7 +280,7 @@ void CommandData::commandHandler()
 
 	if (!value)
 	{
-        //PrintWarning(string("Command ") + Name() + " not valid data!");
+        //Print::PrintWarning(string("Command ") + Name() + " not valid data!");
 		return;
 	}
 

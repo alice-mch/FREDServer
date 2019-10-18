@@ -13,11 +13,15 @@ public:
 
     struct Unit
     {
+        struct Alf
+        {
+            string alfId;
+            int32_t serialId, linkId;
+        };
+
         string unitName;
         vector<int32_t> unitIds;
-
-        string alfId;
-        int32_t serialId, linkId;
+        pair<Alf, Alf> alfs; //CRU and CAN alf
     };
 
     Mapping(vector<string> data = vector<string>());

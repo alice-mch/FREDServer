@@ -2,7 +2,6 @@
 #include "Fred/Config/groups.h"
 #include "Alfred/print.h"
 #include "Parser/utility.h"
-#include "Alfred/print.h"
 
 Groups::Groups(vector<string> data)
 {
@@ -84,7 +83,7 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
             }
             else
             {
-                PrintError(groups[g].unitName + " is not an existing FED!");
+                Print::PrintError(groups[g].unitName + " is not an existing FED!");
                 throw runtime_error("Unexisting FED");
             }
         }
@@ -148,7 +147,7 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
 
     for (auto it = mask.begin(); it != mask.end(); it++)
     {
-        PrintWarning(fed + "[" + to_string(*it) + "] is masked!");
+        Print::PrintWarning(fed + "[" + to_string(*it) + "] is masked!");
 
         if (find(allIds.begin(), allIds.end(), *it) != allIds.end())
         {
@@ -158,11 +157,11 @@ void Groups::calculateIds(Mapping& mapping, vector<string> masking)
 
     for (size_t i = 0; i < mask.size(); i++)
     {
-        PrintWarning(fed + " " + to_string(mask[i]) + " is masked but it is not in a group!");
+        Print::PrintWarning(fed + " " + to_string(mask[i]) + " is masked but it is not in a group!");
     }
 }
 
-vector<uint32_t> Groups::processChannels(string line)
+vector<double> Groups::processChannels(string line)
 {
     line = line.substr(line.find("[") + 1, line.find("]") - line.find("[") - 1);
 

@@ -18,7 +18,7 @@ public:
         string unitName, topicName;
         string range;
         vector<int32_t> unitIds;
-        map<string, vector<uint32_t> > inVars;
+        map<string, vector<double> > inVars;
     };
 
     Groups(vector<string> data = vector<string>());
@@ -29,7 +29,7 @@ private:
     vector<Group> groups;
 
     void processGroup(string& left, string& right, vector<string>& inVars);
-    vector<uint32_t> processChannels(string line);
+    vector<double> processChannels(string line);
 
     void fillInVars(Group& group);
 };

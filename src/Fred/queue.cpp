@@ -38,11 +38,12 @@ void Queue::clearQueue(Queue *queue)
             pair<ProcessMessage*, ChainTopic*> request = queue->stack.front();
             queue->stack.pop_front();
             //do processing
-            request.second->alfLink->setTransaction(request);
+            AlfRpcInfo* alfLink = request.first->getUseCru() ? request.second->alfLink.first : request.second->alfLink.second;
+            alfLink->setTransaction(request);  //CAN bus backup
 
-            PrintVerbose(request.second->name, "Parsing message");
+            Print::PrintVerbose(request.second->name, "Parsing message");
 
-            string fullMessage;
+            vector<string> fullMessage;
             bool noRpcRequest = false; //if true, the RPC request is not sent
 
             try
@@ -53,64 +54,47 @@ void Queue::clearQueue(Queue *queue)
                 }
                 else
                 {
-                    fullMessage = request.first->generateMapiMessage();
+                    fullMessage = vector<string>({ request.first->generateMapiMessage() });
                     noRpcRequest = request.second->mapi->noRpcRequest;
                 }
             }
             catch (exception& e)
             {
                 string errorMessage = e.what();
-                PrintError(request.second->name, errorMessage);
+                Print::PrintError(request.second->name, errorMessage);
 
                 request.second->error->Update(errorMessage.c_str());
-                PrintError(request.second->name, "Updating error service!");
+                Print::PrintError(request.second->name, "Updating error service!");
 
                 queue->isProcessing = false;
                 continue;
             }
 
-            char* buffer;
+            if (noRpcRequest)
+            {
+                Print::PrintVerbose(request.second->name, "Skipping RPC request");
+                noRpcRequest = false; //reset noRpcRequest
+            }
+            else
+            {
+                bool errorOccured = false;
 
-            //if (!request.second->instruction->subscribe || request.second->mapi != NULL) //if MAPI or not subscribe topic
-            //{
-                if (noRpcRequest)
+                for (size_t i = 0; i < fullMessage.size() && !errorOccured; i++)
                 {
-                    PrintVerbose(request.second->name, "Skipping RPC request");
-                    noRpcRequest = false; //reset noRpcRequest 
-                    fullMessage = "not empty string";
-                    buffer = strdup(fullMessage.c_str());
-                }
-                else
-                {
-                    buffer = strdup(fullMessage.c_str());
-                    PrintVerbose(request.second->name, "Sending RPC request:\n" + string(buffer));
-                    request.second->alfLink->Send(buffer);
-                }
-            //}
-            //else
-            //{
-            //    Mapping::Unit* unit = request.second->unit;
-            //    if (request.second->interval > 0.0)
-            //    {
-            //        RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, true);
-            //        fullMessage = request.second->name + "\n" + to_string(request.second->interval) + "\n" + fullMessage;
-            //        buffer = strdup(fullMessage.c_str());
-            //        PrintVerbose(request.second->name, "Sending RPC subscribe request:\n" + string(buffer));
-            //        request.second->alfInfo->setTransaction(request);
-            //        rpcInfo->Send(buffer);
-            //    }
-            //    else
-            //    {
-            //        RpcInfoString* rpcInfo = queue->fred->getAlfClients().getAlfNode(unit->alfId, unit->serialId, unit->linkId, request.second->instruction->type, false);
-            //        fullMessage = request.second->name;
-            //        buffer = strdup(fullMessage.c_str());
-            //        PrintVerbose(request.second->name, "Sending RPC unsubscribe request:\n");
-            //        request.second->alfInfo->clearTransaction();
-            //        rpcInfo->Send(buffer);
-            //    }
-            //}
+                    char* buffer = strdup(fullMessage[i].c_str());
 
-            free(buffer);
+                    do
+                    {
+                        Print::PrintVerbose(request.second->name, "Sending RPC request:\n" + string(buffer));
+                        alfLink->Send(buffer);
+
+                        errorOccured = request.first->getPollPattern()->at(i) == "ERROR";
+                    }
+                    while (!request.first->getPollPattern()->at(i).empty() && !errorOccured);
+
+                    free(buffer);
+                }
+            }
 
             queue->isProcessing = false;
         }

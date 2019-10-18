@@ -11,11 +11,11 @@ const void* AlfInfo::Execution(void* value)
 {
     if (!value)
     {
-        PrintError("Invalid Info received!");
+        Print::PrintError("Invalid Info received!");
         return NULL;
     }
 
-    //PrintDebug("Received Info:\n" + string(static_cast<char*>(value)));    //ignored because of lot of messages
+    //Print::PrintDebug("Received Info:\n" + string(static_cast<char*>(value)));    //ignored because of lot of messages
 
     if (isTransactionAvailable())
     {

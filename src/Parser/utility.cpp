@@ -5,6 +5,7 @@
 #include <cctype>
 #include <algorithm>
 #include <climits>
+#include <cmath>
 #include "Parser/utility.h"
 #include "Parser/calculator.h"
 #include "Alfred/print.h"
@@ -13,9 +14,9 @@
 #include "Fred/Protocols/SWT.h"
 #include "Fred/Protocols/IC.h"
 
-vector<uint32_t> Utility::splitString2Num(const string &text, string by)
+vector<double> Utility::splitString2Num(const string &text, string by)
 {
-    vector<uint32_t> result;
+    vector<double> result;
 
     vector<string> nums = splitString(text, by);
 
@@ -23,11 +24,11 @@ vector<uint32_t> Utility::splitString2Num(const string &text, string by)
     {
         if (nums[j].find('x') != string::npos)
         {
-            result.push_back(stoi(nums[j].substr(nums[j].find('x') + 1), NULL, 16));
+            result.push_back(double(stoi(nums[j].substr(nums[j].find('x') + 1), NULL, 16)));
         }
         else
         {
-            result.push_back(stoi(nums[j], NULL, 10));
+            result.push_back(stof(nums[j]));
         }
     }
 
@@ -46,10 +47,6 @@ vector<string> Utility::splitString(const string& text, string by)
         {
             result.push_back(temp.substr(0, index));
             temp = temp.substr(index + 1);
-            /*if(temp.size() == 0)
-            {
-                result.push_back(temp);
-            }*/
         }
         else
         {
@@ -76,9 +73,9 @@ vector<vector<string> > Utility::splitMessage(const string& text)
     return result;
 }
 
-vector<vector<uint32_t> > Utility::splitMessage2Num(const string &text)
+vector<vector<double> > Utility::splitMessage2Num(const string &text)
 {
-    vector<vector<uint32_t> > result;
+    vector<vector<double> > result;
     vector<string> lines = splitString(text, "\n");
 
     for (size_t i = 0; i < lines.size(); i++)
@@ -114,13 +111,25 @@ void Utility::printVector(const vector<int32_t> &data)
     for (int j = 0; j < data.size(); j++) cout << data[j] << "\n";
 }
 
-double Utility::calculateEquation(string& equation, vector<string>& variables, vector<uint32_t>& values)
+double Utility::calculateEquation(string& equation, vector<string>& variables, vector<double>& values)
 {
     map<string, int> varMap;
 
     for (size_t i = 0; i < values.size(); i++)
     {
-        varMap[variables[i]] = (int)(values[i]);
+        if (trunc(values[i]) == values[i])
+        {
+            varMap[variables[i]] = int(values[i]);
+        }
+        else
+        {
+            size_t pos = -1;
+            while ((pos = equation.find(variables[i], pos + 1) != string::npos))
+            {
+                equation.insert(pos + variables[i].size(), "/1000");
+            }
+            varMap[variables[i]] = int(values[i] * 1000);
+        }
     }
 
     try
@@ -129,7 +138,7 @@ double Utility::calculateEquation(string& equation, vector<string>& variables, v
     }
     catch (const calculator::error& err)
     {
-        PrintError("Cannot parse equation!");
+        Print::PrintError("Cannot parse equation!");
     }
 
     return 0;

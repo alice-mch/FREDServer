@@ -4,6 +4,7 @@
 #include "Parser/processmessage.h"
 #include "Fred/fredtopics.h"
 #include "Fred/queue.h"
+#include "Fred/mappedcommand.h"
 
 GroupCommand::GroupCommand(string name, Fred* fred, GroupTopic *topic): CommandString::CommandString(name, (ALFRED*)fred)
 {
@@ -25,15 +26,28 @@ const void* GroupCommand::Execution(void *value)
 {
     if (!value)
     {
-        PrintError(topic->name, "Invalid request, no value received!");
+        Print::PrintError(topic->name, "Invalid request, no value received!");
     }
 
-    PrintVerbose(topic->name, "Received group command:\n");
+    Print::PrintVerbose(topic->name, "Received group command:\n");
 
     for (size_t i = 0; i < topic->chainTopics.size(); i++)
     {
-        ProcessMessage* processMessage = new ProcessMessage(topic->inVars, topic->chainTopics[i]->placeId, this);
-        this->topic->chainTopics[i]->alfQueue->newRequest(make_pair(processMessage, this->topic->chainTopics[i]));
+        bool useCru = ((MappedCommand*)topic->chainTopics[i]->command)->getUseCru();
+        ProcessMessage* processMessage = new ProcessMessage(topic->inVars, topic->chainTopics[i]->placeId, this, useCru);
+
+        Queue* queue = useCru ? this->topic->chainTopics[i]->alfQueue.first : this->topic->chainTopics[i]->alfQueue.second;
+        if (!queue)
+        {
+            string error = "Required ALF/CANALF not available!";
+            Print::PrintError(name, error);
+            topic->error->Update(error.c_str());
+            Print::PrintError(topic->name, "Updating error service!");
+            delete processMessage;
+            return NULL;
+        }
+
+        queue->newRequest(make_pair(processMessage, this->topic->chainTopics[i]));
     }
 
     newRequest();
@@ -69,12 +83,12 @@ void GroupCommand::processRequest(GroupCommand* command)
         if (command->groupError) 
         {           
             command->topic->error->Update(response.c_str()); //_ERR
-            PrintError(command->topic->name, "Updating group error service!");
+            Print::PrintError(command->topic->name, "Updating group error service!");
         }
         else
         {
             command->topic->service->Update(response.c_str()); //_ANS
-            PrintVerbose(command->topic->name, "Updating group service!");
+            Print::PrintVerbose(command->topic->name, "Updating group service!");
         }
         
         command->groupError = false;

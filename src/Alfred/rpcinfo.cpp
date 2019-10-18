@@ -45,7 +45,7 @@ RpcInfo::RpcInfo(string name, string dns, ALFRED* alfred)
 
     if (!alfred)
     {
-        PrintError(string("ALFRED for RpcInfo ") + name + " not defined!");
+        Print::PrintError(string("ALFRED for RpcInfo ") + name + " not defined!");
         exit(EXIT_FAILURE);
     }
 
@@ -53,7 +53,7 @@ RpcInfo::RpcInfo(string name, string dns, ALFRED* alfred)
 
     if (AlreadyRegistered(name, dns))
     {
-        PrintError(string("RpcInfo ") + name + " already registered!");
+        Print::PrintError(string("RpcInfo ") + name + " already registered!");
         exit(EXIT_FAILURE);
     }
     else
@@ -99,7 +99,7 @@ void RpcInfo::CallFunction(string name, void* value)
 
     if (function->Type() != FNC_TYPE::SHOT)
     {
-        PrintError("Cannot call non-shot function!");
+        Print::PrintError("Cannot call non-shot function!");
         exit(EXIT_FAILURE);
     }
     else
@@ -121,7 +121,7 @@ void* RpcInfo::Send(void *value)
         case DIM_TYPE::DATA:
             return ((RpcInfoData*)this)->Send(value);
         default:
-            PrintError("Invalid type of client!");
+            Print::PrintError("Invalid type of client!");
             exit(EXIT_FAILURE);
     }
 }
@@ -158,7 +158,7 @@ RpcInfoInt::RpcInfoInt(string name, string dns, ALFRED* alfred): RpcInfo::RpcInf
     type = DIM_TYPE::INT;
     rpcInfo = new DimRpcInfo(name.c_str(), -1);
 
-    PrintVerbose(string("RpcInfo ") + name + " registered!");
+    Print::PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoInt::~RpcInfoInt()
@@ -191,7 +191,7 @@ void* RpcInfoInt::Send(int value)
 
     if (!result)
     {
-        //PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
+        //Print::PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
         return NULL;
     }
 
@@ -205,7 +205,7 @@ RpcInfoFloat::RpcInfoFloat(string name, string dns, ALFRED* alfred): RpcInfo::Rp
     type = DIM_TYPE::FLOAT;
     rpcInfo = new DimRpcInfo(name.c_str(), -1.0);
 
-    PrintVerbose(string("RpcInfo ") + name + " registered!");
+    Print::PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoFloat::~RpcInfoFloat()
@@ -238,7 +238,7 @@ void* RpcInfoFloat::Send(float value)
 
     if (!result)
     {
-        //PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
+        //Print::PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
         return NULL;
     }
 
@@ -255,7 +255,7 @@ RpcInfoString::RpcInfoString(string name, string dns, ALFRED* alfred): RpcInfo::
 
     rpcInfo = new DimRpcInfo(name.c_str(), noLink);
 
-    PrintVerbose(string("RpcInfo ") + name + " registered!");
+    Print::PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoString::~RpcInfoString()
@@ -288,7 +288,7 @@ void* RpcInfoString::Send(char *value)
 
     if (!result)
     {
-        //PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
+        //Print::PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
         return NULL;
     }
 
@@ -303,7 +303,7 @@ RpcInfoData::RpcInfoData(string name, string dns, ALFRED* alfred, size_t size): 
     this->size = size;
     rpcInfo = new DimRpcInfo(name.c_str(), (void*)NULL, (int)0);
 
-    PrintVerbose(string("RpcInfo ") + name + " registered!");
+    Print::PrintVerbose(string("RpcInfo ") + name + " registered!");
 }
 
 RpcInfoData::~RpcInfoData()
@@ -315,7 +315,7 @@ void* RpcInfoData::Send(void* value)
 {
     if (!value)
     {
-        //PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
+        //Print::PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
         return NULL;
     }
 
@@ -325,7 +325,7 @@ void* RpcInfoData::Send(void* value)
 
     if (!recValue)
     {
-        //PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
+        //Print::PrintWarning(string("RpcInfo ") + Name() + " not valid data!");
         return NULL;
     }
 
@@ -348,7 +348,7 @@ void* RpcInfoData::Send(void* value)
 
     if (!result)
     {
-        //PrintWarning(string("Rpc ") + Name() + " not valid data!");
+        //Print::PrintWarning(string("Rpc ") + Name() + " not valid data!");
         return NULL;
     }
 
