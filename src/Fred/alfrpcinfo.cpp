@@ -58,7 +58,20 @@ const void* AlfRpcInfo::Execution(void *value)
             string equation = pollPatern->at(this->currentPart);
             vector<string> eqns = Utility::splitString(equation, "=");
             vector<string> vars = vector<string>({ "_RES_" });
-            vector<double> vals = vector<double>({ double(stoul(response.substr(response.size() - 9, 8), NULL, 16)) });
+
+            vector<double> vals;
+            try
+            {
+                vals = vector<double>({ double(stoul(response.substr(response.size() - 9, 8), NULL, 16)) });
+            }
+            catch (exception& e)
+            {
+                pollPatern->at(this->currentPart) = "ERROR"; //stop polling
+                this->currentTransaction.first->updateResponse(*this->currentTransaction.second, "Invalid data received: " + response, true);
+
+                clearTransaction();
+                return NULL;
+            }
             
             if (Utility::calculateEquation(eqns[0], vars, vals) == Utility::calculateEquation(eqns[1], vars, vals))
             {
