@@ -11,7 +11,7 @@
 
 int main(int argc, char** argv)
 {
-	bool parseOnly = Fred::commandLineArguments(argc, argv);
+	parseOnly = Fred::commandLineArguments(argc, argv);
 	pair<string, string> config = Fred::readConfigFile();
 	Fred fred(parseOnly, config.first, config.second, "./sections");
 

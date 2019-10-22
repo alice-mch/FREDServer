@@ -15,6 +15,7 @@ private:
     static void terminate(int);
     void generateAlfs();
     void generateTopics();
+    void checkAlfs();
 
     vector<Section> sections;
     AlfClients alfClients;

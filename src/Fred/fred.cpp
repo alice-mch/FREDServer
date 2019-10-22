@@ -10,6 +10,8 @@
 #include "Fred/Mapi/iterativemapi.h"
 #include "Fred/Mapi/mapigroup.h"
 #include <boost/program_options.hpp>
+#include "Fred/dimutilities.h"
+#include "Fred/alfrpcinfo.h"
 
 /*
  * Fred constructor
@@ -46,7 +48,8 @@ Fred::Fred(bool parseOnly, string fredName, string dnsName, string mainDirectory
 
     PrintInfo("Parsing Completed. Starting FRED.");
     generateAlfs();
-    generateTopics();         
+    generateTopics();
+    checkAlfs();
     PrintInfo("FRED running.");
 }
 
@@ -121,6 +124,26 @@ void Fred::generateTopics()
 
     RegisterCommand(new CruRegisterCommand(CruRegisterCommand::WRITE, this));
     RegisterCommand(new CruRegisterCommand(CruRegisterCommand::READ, this));
+}
+
+void Fred::checkAlfs()
+{
+    vector<string> services;
+
+    map<string, ChainTopic> topicsMapi = fredTopics.getTopicsMap();
+    for (auto topic = topicsMapi.begin(); topic != topicsMapi.end(); topic++)
+    {
+        pair <string, string> alfred;
+        
+        alfred.first = topic->second.name;
+        alfred.second = topic->second.alfLink->getName();
+
+        //cout << alfred.first << " -> " << alfred.second << endl; // print "topic -> alfLink"
+        
+        services.push_back(alfred.second);
+    }
+
+    DimUtilities::checkServices(services);
 }
 
 AlfClients& Fred::getAlfClients()
