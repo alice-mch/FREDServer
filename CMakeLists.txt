@@ -9,6 +9,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin)
 
+find_package(Boost REQUIRED COMPONENTS program_options)
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+
+message(STATUS "Boost_LIBRARY_DIRS="  ${Boost_LIBRARY_DIRS})
+message(STATUS "Boost_LIBRARIES="  ${Boost_LIBRARIES})
+
 set(ALFRED_SOURCES
 		"src/Alfred/alfred.cpp"
 		"src/Alfred/client.cpp"
@@ -54,4 +61,4 @@ file(GLOB SOURCES "src/main.cpp"
 	)
 
 add_executable(FREDServer ${SOURCES})
-target_link_libraries(FREDServer Alfred libboost_program_options.a)
+target_link_libraries(FREDServer Alfred Boost::program_options)

@@ -8,7 +8,7 @@ Uncomment commented lines and recompile to use MAPI example
 #include "Alfred/print.h"
 #include "Fred/fredMode.h"
 #include <boost/program_options.hpp>
-
+#include "Mapi/sampa_config.h"
 //#include "Mapi/mapiexample.h"
 
 int fredMode = DEFAULT;
@@ -81,10 +81,11 @@ int main(int argc, char** argv)
 	Fred fred(config.first, config.second, "./sections");
 
 	//MapiExample mapiExample;
-	
+	SampaConfig sampaConfig;
+
 	try
 	{
-		//fred.registerMapiObject("FRED1/MAPI_EXAMPLE/LOOP0/TEST", &mapiExample);
+	  fred.registerMapiObject("FRED1/SAMPA_CONFIG/SOLAR1/SAMPA_REG", &sampaConfig);
 	}
 	catch (exception& e)
 	{
