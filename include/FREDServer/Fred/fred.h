@@ -15,6 +15,7 @@ private:
     static void terminate(int);
     void generateAlfs();
     void generateTopics();
+    void checkAlfs();
 
     vector<Section> sections;
     AlfClients alfClients;
@@ -23,8 +24,9 @@ private:
     string fredDns;
 
 public:
-    Fred(string fredName, string fredDns, string mainDirectory);
+    Fred(bool parseOnly, string fredName, string fredDns, string mainDirectory);
     static pair<string, string> readConfigFile();
+    static bool commandLineArguments(int argc, char** argv);
 
     AlfClients &getAlfClients();
     FredTopics &getFredTopics();

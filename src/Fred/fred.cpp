@@ -1,18 +1,23 @@
 #include "Fred/fred.h"
 #include <signal.h>
+#include <fstream>
 #include <exception>
 #include "Alfred/print.h"
 #include "Parser/parser.h"
 #include "Fred/Config/mapping.h"
 #include "Fred/cruregistercommand.h"
-#include "Fred/fredMode.h"
 #include "Fred/Mapi/mapi.h"
 #include "Fred/Mapi/iterativemapi.h"
 #include "Fred/Mapi/mapigroup.h"
+#include <boost/program_options.hpp>
+#include "Fred/dimutilities.h"
+#include "Fred/alfrpcinfo.h"
 
-Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRED(fredName, dnsName), alfClients(this), fredTopics(this)
+/*
+ * Fred constructor
+ */
+Fred::Fred(bool parseOnly, string fredName, string dnsName, string mainDirectory): ALFRED::ALFRED(fredName, dnsName), alfClients(this), fredTopics(this)
 {
-    extern int fredMode;
     signal(SIGINT, &terminate);
 
     this->fredDns = dnsName;
@@ -35,7 +40,7 @@ Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRE
         exit(EXIT_FAILURE);
     }
 
-    if (fredMode == PARSER)
+    if (parseOnly)
     {
         PrintInfo("Parsing completed! No problems discovered.");
         exit(EXIT_SUCCESS);
@@ -43,10 +48,14 @@ Fred::Fred(string fredName, string dnsName, string mainDirectory): ALFRED::ALFRE
 
     PrintInfo("Parsing Completed. Starting FRED.");
     generateAlfs();
-    generateTopics();         
+    generateTopics();
+    checkAlfs();
     PrintInfo("FRED running.");
 }
 
+/*
+ * Read FRED name and DIM DNS from fred.conf
+ */
 pair<string, string> Fred::readConfigFile()
 {
     try
@@ -117,6 +126,26 @@ void Fred::generateTopics()
     RegisterCommand(new CruRegisterCommand(CruRegisterCommand::READ, this));
 }
 
+void Fred::checkAlfs()
+{
+    vector<string> services;
+
+    map<string, ChainTopic> topicsMapi = fredTopics.getTopicsMap();
+    for (auto topic = topicsMapi.begin(); topic != topicsMapi.end(); topic++)
+    {
+        pair <string, string> alfred;
+        
+        alfred.first = topic->second.name;
+        alfred.second = topic->second.alfLink->getName();
+
+        //cout << alfred.first << " -> " << alfred.second << endl; // print "topic -> alfLink"
+        
+        services.push_back(alfred.second);
+    }
+
+    DimUtilities::checkServices(services);
+}
+
 AlfClients& Fred::getAlfClients()
 {
     return alfClients;
@@ -137,4 +166,75 @@ void Fred::registerMapiObject(string topic, Mapi* mapi)
     mapi->getFred(this);
     mapi->getName(topic);
     fredTopics.registerMapiObject(topic, mapi);
+}
+
+/*
+ * Compute eventual command line arguments, return true if FRED is in parse only mode
+ */
+bool Fred::commandLineArguments(int argc, char** argv)
+{
+    extern bool verbose;
+    extern bool logToFile;
+    extern string logFilePath;
+
+    namespace po = boost::program_options;
+    po::options_description description("FRED options");
+    description.add_options()
+    ("help, h", "Print help message")
+    ("verbose, v", "Verbose output")
+    ("parser, p", "Parse config files then exit")
+    ("log, l", po::value<string>(),"Log to file <file>");
+
+    po::variables_map vm;
+
+    try
+    {
+        po::store(po::parse_command_line(argc, argv, description), vm);
+        if (vm.count("help"))
+        {
+            cout << description << endl; //print help menu
+            exit(EXIT_SUCCESS);
+        }
+        if (vm.count("log"))
+        {
+            logFilePath = vm["log"].as<string>();
+            ofstream logFile;
+
+            logFile.open(logFilePath, ios_base::app);
+            if (logFile)
+            {
+                PrintInfo("FRED launched, logging to " + logFilePath); //inform user
+                logToFile = true;
+                PrintInfo("FRED launched, logging to " + logFilePath); //inform via log file
+            }
+            else
+            {
+                PrintError("FRED launched, log file " + logFilePath + " is not writable, falling back to standard output!");
+            }
+            logFile.close();
+        }
+        else
+        {
+            PrintInfo("FRED launched!");
+        }
+        if (vm.count("verbose"))
+        {
+            verbose = true;
+            PrintWarning("FRED is verbose!");
+        }
+        if (vm.count("parser"))
+        {
+            PrintWarning("Parse only mode!");
+            return true;
+        }
+        po::notify(vm);
+    }
+    catch (po::error& e)
+    {
+        PrintError(e.what());
+        cerr << description << endl; //print help menu
+        exit(EXIT_FAILURE);
+    }
+
+    return false;
 }

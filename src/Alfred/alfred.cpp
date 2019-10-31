@@ -7,23 +7,33 @@
 #include "Alfred/info.h"
 #include "Alfred/rpc.h"
 #include "Alfred/rpcinfo.h"
+#include "Fred/dimutilities.h"
+#include "Fred/global.h"
 
 ALFRED::ALFRED(string server, string dns, string network)
 {
+    extern bool parseOnly;
+    
 	this->server = server;
 	this->dns = dns;
 	this->network = network;
 
-    //cout << dns << "\n";
-
 	setenv("DIM_HOST_NODE", network == "" ? GetHost().c_str() : GetIP().c_str(), 1);
     setenv("DIM_DNS_NODE", dns.c_str(), 1);
 
-	if (ServerRegistered(server))
-	{
-		PrintError(string("Server ") + server + " is already registered on DIM DNS!");
-		exit(EXIT_FAILURE);
-	}
+    if (!parseOnly) // do not check DIM DNS
+    {
+        if (!DimUtilities::dimDnsIsUp(dns))
+        {
+            PrintError("DIM DNS " + dns + " is NOT UP!");
+            exit(EXIT_FAILURE);
+        }
+        else if (ServerRegistered(server))
+    	{
+    		PrintError(string("Server ") + server + " is already registered on DIM DNS!");
+            exit(EXIT_FAILURE);
+    	}
+    }
 }
 
 ALFRED::~ALFRED()

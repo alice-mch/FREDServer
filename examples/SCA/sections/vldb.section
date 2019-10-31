@@ -4,6 +4,6 @@ VLDB = {
     }
 
     MAPPING = {
-       VLDB[0] = ALF74/SERIAL_0/LINK_1
+       VLDB[0] = ALF_FLP333/SERIAL_0/LINK_1
     }
 }

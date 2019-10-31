@@ -9,14 +9,8 @@ AlfRpcInfo::AlfRpcInfo(string name, string dns, Fred* fred): RpcInfoString::RpcI
     this->name = name;
 }
 
-const void* AlfRpcInfo::Execution(void *value) //todo
+const void* AlfRpcInfo::Execution(void *value)
 {
-    if (!value)
-    {
-        PrintError(currentTransaction.second->name, "Invalid RPC Info received!");
-        return NULL;
-    }
-
     PrintVerbose(currentTransaction.second->name, "Received RPC Info from " + name + ":\n" + string(static_cast<char*>(value)));
 
     if (isTransactionAvailable())
@@ -55,4 +49,9 @@ void AlfRpcInfo::clearTransaction()
 bool AlfRpcInfo::isTransactionAvailable()
 {
     return this->currentTransaction.first && this->currentTransaction.second;
+}
+
+string& AlfRpcInfo::getName()
+{
+    return this->name;
 }
